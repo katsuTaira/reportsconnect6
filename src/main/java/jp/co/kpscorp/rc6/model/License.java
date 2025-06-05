@@ -29,7 +29,7 @@ public class License {
 	@Version
 	private Timestamp lastmodifieddate;
 	@OneToMany(mappedBy = "licenseBean")
-	private List<User> users;
+	private List<Usertbl> users;
 	@OneToMany(mappedBy = "licenseBean")
 	private List<Organization> organizations;
 
@@ -81,11 +81,11 @@ public class License {
 		this.lastmodifieddate = lastmodifieddate;
 	}
 
-	public List<User> getUsers() {
+	public List<Usertbl> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(List<Usertbl> users) {
 		this.users = users;
 	}
 

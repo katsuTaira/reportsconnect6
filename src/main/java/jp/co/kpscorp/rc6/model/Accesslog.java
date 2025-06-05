@@ -3,13 +3,17 @@ package jp.co.kpscorp.rc6.model;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
+@Entity
+@Table(name = "accesslog")
 public class Accesslog {
 	@Id
 	private Integer id;
@@ -28,8 +32,8 @@ public class Accesslog {
 	private String userid;
 	private String orgid;
 	@ManyToOne
-	@JoinColumn(name = "user")
-	private User userBean;
+	@JoinColumn(name = "usertbl")
+	private Usertbl usertblBean;
 	@Version
 	private Timestamp lastmodifieddate;
 
@@ -153,12 +157,12 @@ public class Accesslog {
 		this.orgid = orgid;
 	}
 
-	public User getUserBean() {
-		return userBean;
+	public Usertbl getUsertblBean() {
+		return usertblBean;
 	}
 
-	public void setUserBean(User userBean) {
-		this.userBean = userBean;
+	public void setUsertblBean(Usertbl usertblBean) {
+		this.usertblBean = usertblBean;
 	}
 
 	public Timestamp getLastmodifieddate() {

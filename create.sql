@@ -35,3 +35,27 @@ ALTER TABLE usertbl ADD FOREIGN KEY (license) REFERENCES license (id) ON DELETE 
 ALTER TABLE usertbl ADD FOREIGN KEY (organization) REFERENCES organization (id) ON DELETE CASCADE;
 
 
+CREATE TABLE accesslog
+(
+    id serial PRIMARY KEY,
+    lastmodifieddate time with time zone DEFAULT now(),
+    lastdate timestamp without time zone,
+    accesscnt integer,
+    pageovercnt integer,
+    memovercnt integer,
+    idruningcnt integer,
+    otherercnt integer,
+    licensename text,
+    memo text,
+    lastjson text,
+    ip text,
+    datacheckcnt integer,
+    v6cnt integer,
+    userid text,
+    orgid text,
+    user integer
+);
+ALTER TABLE accesslog ADD FOREIGN KEY (user) REFERENCES user (id) ON DELETE SET NULL;
+
+
+

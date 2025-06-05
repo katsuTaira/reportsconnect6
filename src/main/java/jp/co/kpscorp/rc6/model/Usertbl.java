@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "usertbl")
+public class Usertbl {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

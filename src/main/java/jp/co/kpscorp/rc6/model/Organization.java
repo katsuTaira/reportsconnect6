@@ -35,7 +35,7 @@ public class Organization {
 	private Timestamp lastmodifieddate;
 
 	@OneToMany(mappedBy = "organizationBean")
-	private List<User> users;
+	private List<Usertbl> users;
 
 	public Integer getId() {
 		return id;
@@ -109,11 +109,11 @@ public class Organization {
 		this.lastmodifieddate = lastmodifieddate;
 	}
 
-	public List<User> getUsers() {
+	public List<Usertbl> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(List<Usertbl> users) {
 		this.users = users;
 	}
 
