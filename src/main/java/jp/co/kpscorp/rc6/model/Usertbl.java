@@ -2,19 +2,22 @@ package jp.co.kpscorp.rc6.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
+import lombok.Data;
 
 @Entity
 @Table(name = "usertbl")
+@Data
 public class Usertbl {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,46 +31,8 @@ public class Usertbl {
 	private License licenseBean;
 	@Version
 	private Timestamp lastmodifieddate;
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getUserid() {
-		return userid;
-	}
-
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
-
-	public Organization getOrganizationBean() {
-		return organizationBean;
-	}
-
-	public void setOrganizationBean(Organization organizationBean) {
-		this.organizationBean = organizationBean;
-	}
-
-	public License getLicenseBean() {
-		return licenseBean;
-	}
-
-	public void setLicenseBean(License licenseBean) {
-		this.licenseBean = licenseBean;
-	}
-
-	public Timestamp getLastmodifieddate() {
-		return lastmodifieddate;
-	}
-
-	public void setLastmodifieddate(Timestamp lastmodifieddate) {
-		this.lastmodifieddate = lastmodifieddate;
-	}
+	@Transient
+	private String licensename;
 
 	@PreUpdate
 	void preUpdate() {

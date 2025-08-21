@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="http://techsupport.kpscorp.jp/templates/newkokyakuroku/favicon.ico"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/common.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/extended.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/elements.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/security_page.css|"
+    />
+    <style type="text/css">
+      #main-logo {
+        display: block;
+        font-size: 30pt;
+        height: 80px;
+        overflow: hidden;
+        position: absolute;
+        width: 300px;
+        z-index: 12;
+        margin-top: 0px;
+        padding-top: 20px;
+        padding-left: 10px;
+        color: Snow;
+      }
+    </style>
+    <title>ダウンロードページ</title>
+  </head>
+  <body>
+    <div id="pagewrap">
+      <a id="main-logo" href="http://techsupport.kpscorp.jp/reportsconnect.html"
+        >ReportsConnect</a
+      >
+      <div id="headerwrap">
+        <div id="header">
+          <div id="headertext" style="font-size: 18px">
+            <a href="http://www.kpscorp.co.jp/">KPS</a>の印刷ソリューション
+          </div>
+        </div>
+      </div>
+      <div id="contentwrap">
+        <div class="oauthcontent" id="oauthcontent" style="height: 259px">
+          <div id="client_details" style="padding-top: 50px">
+            <img th:src="|${baseUrl}/resources/ReportsConnect.png|" />
+            <div id="client_description">
+              印刷サーバーにPDFファイルの作成を要求しました。
+            </div>
+          </div>
+          <div class="arrow"></div>
+          <div id="perms_wrap" style="padding-top: 5px">
+            <a
+              href="http://www.reportsconnect.com/reportsmake.html"
+              target="blank"
+            >
+              <img
+                th:src="|${baseUrl}/resources/makereports.png|"
+                border="0"
+                alt="帳票作成"
+                title="セールスフォース帳票"
+                width="220"
+              />
+            </a>
+            <br /><br />
+            <h2 id="shorih">ただ今処理中...</h2>
+            <div class="oauth_text bullets">
+              PDFファイルのダウンロードが始まるまで、少々お待ちください。
+            </div>
+            <div class="oauth_text">
+              ダウンロード完了後、このウインドウを閉じてください。
+            </div>
+            <div id="acceptdeny">
+              <input
+                type="button"
+                title="閉じる"
+                class="btnPrimary btn allowBtn"
+                value=" 閉じる "
+                onclick="window.close();"
+              />
+            </div>
+          </div>
+        </div>
+        &nbsp;
+      </div>
+    </div>
+    <script type="text/javascript" th:inline="javascript">
+      function addLoadEvent(func) {
+        var oldonload = window.onload;
+        if (typeof window.onload != "function") {
+          window.onload = func;
+        } else {
+          window.onload = function () {
+            oldonload();
+            func();
+          };
+        }
+      }
+      function doDl() {
+        location.href = /*[[|dl2?state=${key}|]]*/ "dl2?state=";
+      }
+      if ("[(${key})]" != "") {
+        addLoadEvent(doDl);
+      }
+    </script>
+  </body>
+</html>

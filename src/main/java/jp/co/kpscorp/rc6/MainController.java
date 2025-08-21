@@ -9,24 +9,24 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileItemFactory;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.w3c.tools.codec.Base64Decoder;
 import org.w3c.tools.codec.Base64FormatException;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+
 //import com.lowagie.text.pdf.EudcFontRegistry;
 
 import jp.co.kpscorp.rc6.model.Accesslog;
@@ -48,6 +52,7 @@ import jp.co.kpscorp.rc6.repo.AccesslogRepository;
 import jp.co.kpscorp.rc6.repo.LicenseRepository;
 import jp.co.kpscorp.rc6.repo.OrganizationRepository;
 import jp.co.kpscorp.rc6.repo.UsertblRepository;
+import jp.co.kpscorp.rc6.service.AuthTokenService;
 import net.arnx.jsonic.JSON;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -74,6 +79,7 @@ public class MainController {
 	public static final String cidKey = "client_id";
 	public static final String authParmKey = "kps_aParm";
 	public static final String hostSafixKey = "Kps_hostSafix";
+	public static final String codeVerifierKey = "Kps_codeVerifier";
 
 	@Autowired
 	private LicenseRepository lcrep;
@@ -89,12 +95,12 @@ public class MainController {
 	/**
 	 * @param pmap
 	 * @return
-	 * sfdc側のReportsConnectControllerのコンストラクタからのリクエストに応えてユーザー情報/serverUrl等を返す
-	 * パラメーターにjsonUrlKeyがあればjsonでユーザー情報を返す、なければserverurlのみを返す
-	 * 該当ユーザーがあれば、そのライセンスのserverurlを、なければライセンスfreeのserverurlをライセンスから読んで返す
-	 * そのユーザーのアクセスログがあれば、hasaccesslogをtrueとする
-	 * そのユーザーか、そのユーザーの組織にライセンスが一ついじょうあれば、haslicenseをtrueとする
-	 * 組織にexattKeyがある場合は、licensenameにそれを返す
+	 *         sfdc側のReportsConnectControllerのコンストラクタからのリクエストに応えてユーザー情報/serverUrl等を返す
+	 *         パラメーターにjsonUrlKeyがあればjsonでユーザー情報を返す、なければserverurlのみを返す
+	 *         該当ユーザーがあれば、そのライセンスのserverurlを、なければライセンスfreeのserverurlをライセンスから読んで返す
+	 *         そのユーザーのアクセスログがあれば、hasaccesslogをtrueとする
+	 *         そのユーザーか、そのユーザーの組織にライセンスが一ついじょうあれば、haslicenseをtrueとする
+	 *         組織にexattKeyがある場合は、licensenameにそれを返す
 	 *
 	 */
 	@RequestMapping("/su")
@@ -197,6 +203,7 @@ public class MainController {
 
 	/**
 	 * クライアントから必要なファイルのアップロードを処理して保存する
+	 * 
 	 * @param req
 	 * @return
 	 * @throws FileUploadException
@@ -204,71 +211,77 @@ public class MainController {
 	 * @throws Base64FormatException
 	 * @throws JRException
 	 *
-	 * ①ファイルおよびパラメータの受信
-	 *     クライアント側（ReportsConnectController)から該当の帳票オブジェクトに添付されているファイル(base64で内容をエンコード）
-	 *     およびパラメータをmultipart/form-dataとしてPostで送信する。
-	 *     PDF連結の場合は、filenameは帳票オブジェクトのID/ファイル名　として送る。（これにより、サーバー側のファイル領域は、帳票
-	 *     オブジェクトのIDのサブフォルダー以下に自動的に配置される）
+	 *                                  ①ファイルおよびパラメータの受信
+	 *                                  クライアント側（ReportsConnectController)から該当の帳票オブジェクトに添付されているファイル(base64で内容をエンコード）
+	 *                                  およびパラメータをmultipart/form-dataとしてPostで送信する。
+	 *                                  PDF連結の場合は、filenameは帳票オブジェクトのID/ファイル名
+	 *                                  として送る。（これにより、サーバー側のファイル領域は、帳票
+	 *                                  オブジェクトのIDのサブフォルダー以下に自動的に配置される）
 	 *
-	 * ②keyの生成
-	 *     x + 乱数　のkeyを生成する
+	 *                                  ②keyの生成
+	 *                                  x + 乱数 のkeyを生成する
 	 *
-	 * ③ファイルおよびパラメータの保存
-	 *     Apache commons FileUploadライブラリを使用して受信したmultipart/form-dataを処理する
-	 *     ファイルは、"/jasper/" + keyのフォルダーに保存する（連結の場合はファイル名の前に帳票オブジェクトのID+"/"が入っているため、
-	 *     階層構造になる）
-	 *     パラメータは、pmapというMapにkey/valueで保存して、keyをattribute名としてアプリケーションスコープに保管する
-	 *     サブリポートがある場合、サブリポートのjrxmlファイルをコンパイルしておく（メインのjrxmlはダウンロード時にコンパイルするが
-	 *     それ以外はしないため）
-	 *     Springコンポーネント Settings内に設定されているconsumerKeyおよびconsumerSeacretを、処理するサーバーのURLから取り出すして
-	 *     pmapに設定（heroku環境とlocalhost（開発時）では異なる）
-	 *     OAuth2.0のリクエスト用URLを組み立てる
-	 *     (https://login.salesforce.com/services/oauth2/authorize?response_type=code&client_id=<your_client_id>&redirect_uri=<your_redirect_uri>)
-	 *     redirect_uriは次のAuthTokenサーブレットを呼び出すURLとなる。また、次の処理に引き渡すkeyの値をURLのstateに設定する。
-	 *     OAuth2.0のリクエスト用URLをクライアントへ返して終了
+	 *                                  ③ファイルおよびパラメータの保存
+	 *                                  Apache commons
+	 *                                  FileUploadライブラリを使用して受信したmultipart/form-dataを処理する
+	 *                                  ファイルは、"/jasper/" +
+	 *                                  keyのフォルダーに保存する（連結の場合はファイル名の前に帳票オブジェクトのID+"/"が入っているため、
+	 *                                  階層構造になる）
+	 *                                  パラメータは、pmapというMapにkey/valueで保存して、keyをattribute名としてアプリケーションスコープに保管する
+	 *                                  サブリポートがある場合、サブリポートのjrxmlファイルをコンパイルしておく（メインのjrxmlはダウンロード時にコンパイルするが
+	 *                                  それ以外はしないため）
+	 *                                  Springコンポーネント
+	 *                                  Settings内に設定されているconsumerKeyおよびconsumerSeacretを、処理するサーバーのURLから取り出すして
+	 *                                  pmapに設定（heroku環境とlocalhost（開発時）では異なる）
+	 *                                  OAuth2.0のリクエスト用URLを組み立てる
+	 *                                  (https://login.salesforce.com/services/oauth2/authorize?response_type=code&client_id=<your_client_id>&redirect_uri=<your_redirect_uri>)
+	 *                                  redirect_uriは次のAuthTokenサーブレットを呼び出すURLとなる。また、次の処理に引き渡すkeyの値をURLのstateに設定する。
+	 *                                  OAuth2.0のリクエスト用URLをクライアントへ返して終了
 	 *
-	 * 通常のフォルダー構成
+	 *                                  通常のフォルダー構成
 	 *
-	 * -jasper-key--xxx.jrxml
-	 *            |-xxx.jpg
-	 *               :
+	 *                                  -jasper-key--xxx.jrxml
+	 *                                  |-xxx.jpg
+	 *                                  :
 	 *
-	 * 連結の場合
+	 *                                  連結の場合
 	 *
-	 * -jasper-key
-	 *            |-子帳票オブジェクトのid1--yyy.jrxml (子）
-	 *                　                   |-yyy.jpg
-	 *            |-子帳票オブジェクトのid2--zzz.jrxml (子）
-	 *                  　                 |-zzz.jpg
+	 *                                  -jasper-key
+	 *                                  |-子帳票オブジェクトのid1--yyy.jrxml (子）
+	 *                                  |-yyy.jpg
+	 *                                  |-子帳票オブジェクトのid2--zzz.jrxml (子）
+	 *                                  |-zzz.jpg
 	 *
-	 * なお、外字ファイル（EudcFontRegistry)の扱いに関しては保留
+	 *                                  なお、外字ファイル（EudcFontRegistry)の扱いに関しては保留
 	 * @throws ServletException
+	 * @throws NoSuchAlgorithmException
 	 */
 	@RequestMapping("/st")
 	@ResponseBody
 	public String st(HttpServletRequest req)
-			throws FileUploadException, IOException, Base64FormatException, JRException, ServletException {
+			throws FileUploadException, IOException, Base64FormatException, JRException, ServletException,
+			NoSuchAlgorithmException {
 		String res = null;
 
 		String key = null;
 		// String key = makeKey(req, resp);
 		// Check that we have a file upload request
-		boolean isMultipart = ServletFileUpload.isMultipartContent(req);
+		boolean isMultipart = JakartaServletFileUpload.isMultipartContent(req);
 		if (!isMultipart) {
 			return null;
 		}
 
 		// Create a factory for disk-based file items
-		FileItemFactory factory = new DiskFileItemFactory();
+		FileItemFactory<?> factory = DiskFileItemFactory.builder().get();
 
 		// Create a new file upload handler
-		ServletFileUpload upload = new ServletFileUpload(factory);
+		JakartaServletFileUpload upload = new JakartaServletFileUpload(factory);
 
 		// Parse the request
-		//Connection con = null;
+		// Connection con = null;
 		// add 2017/04/07
 		// 最初にkeyを抽出
-		List<FileItem> items = upload.parseRequest(req);
+		List<FileItem<?>> items = upload.parseRequest(req);
 		Map<String, String> pmap = new HashMap<String, String>();
 		for (FileItem item : items) {
 			System.out.println(item);
@@ -283,13 +296,13 @@ public class MainController {
 		// add end 2017/04/07
 		// Map<String, String> pmap = new HashMap<String, String>();
 		// ipを保存
-		//printHeader(req);
+		// printHeader(req);
 		// List<FileItem> items = upload.parseRequest(req);
 		List<File> savedFiles = new ArrayList<File>();
 		for (FileItem item : items) {
 			System.out.println(item);
 			if (item.isFormField()) {
-				//	processFormField(item, pmap);
+				// processFormField(item, pmap);
 			} else {
 				File f = processUploadedFile(item, key, pmap);
 				if (f != null) {
@@ -328,28 +341,30 @@ public class MainController {
 			// batch mode
 			req.setAttribute("key", key);
 			/*
-			String res;
-			try {
-				res = new BatchExcuter().goBatch(req, resp);
-			} catch (Exception e) {
-				e.printStackTrace();
-				String emsg = e + ":" + e.getMessage();
-				if (emsg.contains("LOGIN_DURING_RESTRICTED_DOMAIN")) {
-					emsg = "アクセスが拒否されました。IPアドレス制限を行っている場合は<a href='http://www.reportsconnect.com/ip.html'>IPアドレス固定化オプション</a>を使用してください。";
-				}
-				pmap.put(BatchExcuter.batchErrorMsgKey, emsg);
-				if (!BatchExcuter.isNouserMode(pmap)) {
-					// Downloadへ
-					res = AuthTokenService.getBaseUrl(req) + "/dl?state=" + key;
-				} else {
-					res = BatchExcuter.makeRes(emsg, pmap);
-					AuthTokenService.cleanUp(key, req.getSession().getServletContext());
-				}
-			}
-			write(res, resp);
-			*/
+			 * String res;
+			 * try {
+			 * res = new BatchExcuter().goBatch(req, resp);
+			 * } catch (Exception e) {
+			 * e.printStackTrace();
+			 * String emsg = e + ":" + e.getMessage();
+			 * if (emsg.contains("LOGIN_DURING_RESTRICTED_DOMAIN")) {
+			 * emsg =
+			 * "アクセスが拒否されました。IPアドレス制限を行っている場合は<a href='http://www.reportsconnect.com/ip.html'>IPアドレス固定化オプション</a>を使用してください。"
+			 * ;
+			 * }
+			 * pmap.put(BatchExcuter.batchErrorMsgKey, emsg);
+			 * if (!BatchExcuter.isNouserMode(pmap)) {
+			 * // Downloadへ
+			 * res = AuthTokenService.getBaseUrl(req) + "/dl?state=" + key;
+			 * } else {
+			 * res = BatchExcuter.makeRes(emsg, pmap);
+			 * AuthTokenService.cleanUp(key, req.getSession().getServletContext());
+			 * }
+			 * }
+			 * write(res, resp);
+			 */
 		} else {
-			String rurl = getBaseUrl(req) + "/dl";
+			String rurl = AuthTokenService.getBaseUrl(req) + "/dl";
 			String url = makeUrl(pmap.get(cidKey), rurl, key, pmap.get(hostSafixKey), pmap);
 			res = url;
 		}
@@ -391,11 +406,11 @@ public class MainController {
 		item.getInputStream().close();
 		fos.close();
 		/*
-		if (fileName.toLowerCase().endsWith("ttf")) {
-			// 外字ファイルPathをPMAPへ保管
-			pmap.put(EudcFontRegistry.TH_EUDCFILE, file.getAbsolutePath());
-		}
-		*/
+		 * if (fileName.toLowerCase().endsWith("ttf")) {
+		 * // 外字ファイルPathをPMAPへ保管
+		 * pmap.put(EudcFontRegistry.TH_EUDCFILE, file.getAbsolutePath());
+		 * }
+		 */
 		// 以下、カスタマイズHTML
 		if (fileName.toLowerCase().startsWith("dl.") && (
 		// fileName.toLowerCase().endsWith("jsp") ||
@@ -480,27 +495,19 @@ public class MainController {
 		}
 	}
 
-	public static String getBaseUrl(HttpServletRequest req)
-			throws UnsupportedEncodingException {
-		String rurl = makeReUrl(req);
-		rurl = URLDecoder.decode(rurl, "UTF-8");
-		return rurl.substring(0, rurl.length() - 3);
-	}
-
-	public static String makeReUrl(HttpServletRequest req)
-			throws UnsupportedEncodingException {
-		String url = req.getRequestURL().toString();
-		if (url.indexOf("localhost") == -1) {
-			url = url.replaceFirst("http:", "https:");
-		}
-		return URLEncoder.encode(url, "UTF-8");
-	}
-
 	private String makeUrl(String clid, String redirect_uri, String key, String hostSfx,
-			Map<String, String> pmap) throws IOException {
+			Map<String, String> pmap) throws IOException, NoSuchAlgorithmException {
 		String url = getLoginNm(hostSfx, lcrep) + "/services/oauth2/authorize?response_type=code&"
 				+ cidKey + "=";
 		String uurl = url + clid + "&redirect_uri=" + redirect_uri + "&state=" + key;
+		// code_challenge の生成
+		String code_verifier = UUID.randomUUID().toString();
+		pmap.put(codeVerifierKey, code_verifier);
+		// 2. SHA-256ハッシュしてbase64urlエンコード
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.US_ASCII));
+		String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+		uurl += "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
 		System.out.println("requestCode:" + uurl);
 		return uurl;
 	}
@@ -509,7 +516,7 @@ public class MainController {
 		if (hostSfx == null || hostSfx.indexOf('.') == -1) {
 			return "https://login.salesforce.com";
 		}
-		//2020/09/10 LicenseVoを見る
+		// 2020/09/10 Licenseを見る
 		String res = null;
 		List<License> lvs = lcrep.findByLicensename("authlogin");
 		if (lvs != null && lvs.size() > 0 && !StringUtils.isEmpty(lvs.get(0).getServerurl())) {
@@ -544,6 +551,8 @@ public class MainController {
 		if (isSandBox(sfxs[0]) || isSandBox(sfxs[1])) {
 			return "https://test.salesforce.com";
 		} else {
+			// test scratch用urlを返す
+			// return "https://momentum-ruby-4236-dev-ed.scratch.my.salesforce.com";
 			return "https://login.salesforce.com";
 		}
 

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" type="image/x-icon"
+    href="http://techsupport.kpscorp.jp/templates/newkokyakuroku/favicon.ico" />
+  <link rel="stylesheet" type="text/css" th:href="|${baseUrl}/resources/common.css|" />
+  <link rel="stylesheet" type="text/css" th:href="|${baseUrl}/resources/extended.css|" />
+  <link rel="stylesheet" type="text/css" th:href="|${baseUrl}/resources/elements.css|" />
+  <style type="text/css">
+    #acceptdeny {
+      padding-top: 10px;
+      text-align: center;
+    }
+  </style>
+  <title>データの確認</title>
+</head>
+
+<body>
+  <div class="bodyDiv brdPalette brandPrimaryBrd">
+    <div class="bPageTitle">
+      <div class="ptBody">
+        <div class="content">
+          <img title="データの確認" class="pageTitleIcon" alt="データの確認"
+            src="http://techsupport.kpscorp.jp/templates/newkokyakuroku/favicon.ico" />
+          <h1 class="pageType">
+            ReportsConnect<span class="titleSeparatingColon">:</span>
+          </h1>
+          <h2 class="pageDescription">データの確認</h2>
+          <div class="blank">&nbsp;</div>
+        </div>
+      </div>
+      <div class="ptBreadcrumb"></div>
+    </div>
+    <div class="apexp">
+      <div class="individualPalette">
+        <div class="Custom85Block">
+          <div class="bPageBlock brandSecondaryBrd apexDefaultPageBlock secondaryPalette">
+            <div class="pbBody">
+              <div th:if="${ex != null}">
+                <div id="CSRFDelError" class="message errorM3">
+                  <table cellspacing="0" cellpadding="0" border="0" class="messageTable">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <img title="エラー" class="msgIcon" alt="エラー" th:src="|${baseUrl}/resources/er.png|" />
+                        </td>
+                        <td class="messageCell">
+                          <div class="messageText">
+                            <h4>
+                              以下の例外が発生しています！<br>
+                            </h4>
+                            <p>
+                            <pre th:text="${ex.msgOrStr}"></pre>
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div th:if="${hint != null}">
+                <fieldset class="note">
+                  <legend>ヒント! </legend>
+                  <div class="noteBody">
+                    <img align="left" th:src="|${baseUrl}/resources/helpNote_icon.gif|" />
+                    <span th:text="${hint}"></span>
+                  </div>
+                </fieldset>
+              </div>
+              <div>
+                <div class="pbSubsection">
+                  <table cellspacing="0" cellpadding="0" border="0" class="detailList">
+                    <tbody>
+                      <tr th:if="${ex != null}">
+                        <td class="labelCol  first "><label>Stuck Trace</label></td>
+                        <td class="data2Col  first ">
+                          <textarea rows="6" cols="115" readonly th:text="${ex.stackTraceStr}">
+                          </textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelCol  first "><label>SOQL</label></td>
+                        <td class="data2Col  first ">
+                          <textarea rows="6" cols="115" readonly th:text="${ql}"></textarea>
+                        </td>
+                      </tr>
+                      <th:block th:if="${cw != null}">
+                        <tr>
+                          <td class="labelCol  first "><label>CSVデータソース</label></td>
+                          <td class="data2Col  first ">
+                            <form method="POST" action="uc">
+                              <input type="hidden" value="CsvDataSource.csv" name="ksp_filename" />
+                              <textarea rows="6" cols="115" name="kps_textarea" th:text="${cw.csv}"></textarea>
+                              <input type="submit" value="ファイルCSVデータソースのダウンロード" />
+                            </form>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="labelCol  first "><label>CSVデータソース</label></td>
+                          <td class="data2Col  first ">
+                            <form method="POST" action="uc">
+                              <input type="hidden" value="CsvDataSource.csv" name="ksp_filename" />
+                              <textarea rows="6" cols="115" name="kps_textarea" th:text="${cw.csv}"></textarea>
+                              <input type="submit" value="ファイルCSVデータソースのダウンロード" />
+                            </form>
+                          </td>
+                        </tr>
+                        <tr th:each="csvw : ${cw.csvws}">
+                          <td class="labelCol  first ">
+                            <label>CSVデータソース：<span th:text="${csvw.name}"></span></label>
+                          </td>
+                          <td class="data2Col  first ">
+                            <form method="POST" action="uc">
+                              <input type="hidden" th:value="${csvw.name} + 'CsvDataSource.csv'" name="ksp_filename" />
+                              <textarea rows="6" cols="115" name="kps_textarea" th:text="${csvw.csv}"></textarea>
+                              <input type="submit" value="ファイルCSVデータソースのダウンロード" />
+                            </form>
+                          </td>
+                        </tr>
+                      </th:block>
+
+                      <tr>
+                        <td class="labelCol  first ">
+                          <label>読み込んだデータの構造（先頭10件まで）</label>
+                        </td>
+                        <td class="data2Col  first ">
+                          <textarea rows="6" cols="115" readonly th:text="${dataStr}"></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="labelCol  first "><label>パラメータ一覧</label></td>
+                        <td class="data2Col  first ">
+                          <textarea rows="6" cols="115" readonly th:text="${pmapStr}"></textarea>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div id="acceptdeny">
+                <input type="button" title="閉じる" class="btnPrimary btn allowBtn" value=" 閉じる "
+                  onclick="window.close();" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

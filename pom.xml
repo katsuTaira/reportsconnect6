@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.3.RELEASE</version>
+		<version>3.3.0</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -15,10 +16,16 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -32,7 +39,8 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-security</artifactId>
+		<!-- <dependency> <groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-security</artifactId>
 			</dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -43,18 +51,94 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>com.github.jsimone</groupId>
 			<artifactId>webapp-runner</artifactId>
 			<version>8.5.15.1</version>
 			<scope>provided</scope>
 		</dependency>
+		-->
 		<!-- jasperreports -->
+		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports  
+		 7にするとcompildeで jasperReport tag で namespaceURIがあるだけでエラーになる
+		 net.sf.jasperreports.engine.JRException: Unable to load report
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>7.0.3</version>
+		</dependency>
+		-->
 		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<version>6.14.0</version>
+			<version>6.21.4</version>
+		</dependency>		<!--
+		https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-html-component 
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-html-component</artifactId>
+			<version>6.5.0</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>iTextAsian</groupId>
+			<artifactId>iTextAsian</artifactId>
+			<version>1.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>iTextAsianCmaps</groupId>
+			<artifactId>iTextAsianCmaps</artifactId>
+			<version>1.0</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- fonts ipafont e.t.c. -->
+		<dependency>
+			<groupId>jp.co.kpscorp</groupId>
+			<artifactId>kps-fonts</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.barcode4j/barcode4j -->
+		<dependency>
+			<groupId>net.sf.barcode4j</groupId>
+			<artifactId>barcode4j</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-bridge -->
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-bridge</artifactId>
+			<version>1.17</version>
+		</dependency>
+		<!-- for QR code -->
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<!-- Google Guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r05</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.arnx/jsonic -->
+		<dependency>
+			<groupId>net.arnx</groupId>
+			<artifactId>jsonic</artifactId>
+			<version>1.3.10</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-all -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>3.0.25</version>
+			<type>pom</type>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.w3c.jigsaw/jigsaw -->
 		<dependency>
@@ -62,13 +146,13 @@
 			<artifactId>jigsaw</artifactId>
 			<version>2.2.6</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-fileupload2-jakarta -->
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-fileupload2-jakarta</artifactId>
+			<version>2.0.0-M1</version>
+		</dependency>		<!--
+		https://mvnrepository.com/artifact/commons-lang/commons-lang -->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -79,6 +163,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.arnx/jsonic -->
 		<dependency>
@@ -93,6 +178,43 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.38</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.liferay/com.sforce.soap.partner -->
+		<dependency>
+			<groupId>com.liferay</groupId>
+			<artifactId>com.sforce.soap.partner</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.force.api/force-wsc -->
+		<dependency>
+			<groupId>com.force.api</groupId>
+			<artifactId>force-wsc</artifactId>
+			<version>64.0.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.force.api/force-partner-api -->
+		<dependency>
+			<groupId>com.force.api</groupId>
+			<artifactId>force-partner-api</artifactId>
+			<version>64.0.3</version>
+		</dependency>
+		<!-- API, java.xml.bind module -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -101,30 +223,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.github.jsimone</groupId>
-									<artifactId>webapp-runner</artifactId>
-									<version>8.5.15.1</version>
-									<destFileName>webapp-runner.jar</destFileName>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
-
 </project>

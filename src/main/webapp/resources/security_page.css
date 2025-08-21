@@ -1,0 +1,184 @@
+html, body, div, span, p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    color: black;
+	font-family: Arial, Helvetica, Verdana, sans-serif;
+	text-align: center;
+}
+
+#pagewrap {
+    width: 955px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#headerwrap {
+	height:90px;
+	padding-bottom:0px !important;
+	text-align:left;
+	width:955px;
+}
+
+#header {
+	width:955px;
+	height:76px;
+	margin-top: 6px;
+	margin-right:0px;
+	float: left;
+}
+
+h2, .pageTitle {
+	font-size: 20pt;
+}
+
+#headertext {
+	font-size:12px;
+	margin:30px 0 0;
+	width:920px;
+	text-align: right;
+	z-index:10;
+	position: relative;
+}
+
+#headertext a {
+	background-color: transparent;
+	text-decoration:none;
+}
+#headertext a:hover {
+	text-decoration:underline;
+}
+
+
+#contentwrap {
+    width:895px;
+    overflow: visible;
+	padding: 36px 30px 30px 30px;
+}
+
+#loginpage .content{
+	padding: 0px;
+}
+
+.content{
+	background-color: #ffffff;
+	padding: 20px 40px 40px 40px;
+}
+
+#footer {
+	clear:both;
+	margin:12px;
+	text-align:center;
+	font-size:11px;
+}
+
+#footer a {
+	font-weight:bold;
+}
+#footer a:hover { text-decoration:none; }
+
+#oauthcontent {
+    background-color: #FFFFFF;
+    border: 3px solid #0E9ECF;
+    border-radius: 18px 18px 18px 18px;
+    float: left;
+    width: 100%;
+}
+
+body {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+#header {
+    background-color: #0E9ECF;
+    border-radius: 10px 10px 10px 10px;
+}
+#headertext, #headertext a {
+    color: #FFFFFF;
+}
+#contentwrap, .content {
+    border-radius: 18px 18px 18px 18px;
+}
+#loginpage .content, #contentwrap {
+    background-color: #ECF4F9;
+}
+#contentwrap {
+    border: 1px solid #ECF4F9;
+}
+#footer, #footer a {
+    color: #CCCCCC;
+}
+#client_details {
+    border-right: 1px dotted #DDDDDD;
+    float: left;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: center;
+    width: 40%;
+}
+#oauthcontent {
+    background-color: #FFFFFF;
+    border: 3px solid #0E9ECF;
+    border-radius: 18px 18px 18px 18px;
+    float: left;
+    width: 100%;
+}
+#oauth_img {
+    height: 125px;
+    overflow: hidden;
+    width: 200px;
+}
+#client_name {
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+#client_description {
+    font-size: 12px;
+    padding: 20px;
+    text-align: center;
+}
+#perms_wrap {
+    float: right;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding-right: 20px;
+    width: 53%;
+}
+#message {
+    font-size: 14px;
+    padding-bottom: 10px;
+}
+#acceptdeny {
+    padding-top: 10px;
+    text-align: center;
+}
+.oauth_text {
+    font-size: 14px;
+    padding-top: 15px;
+}
+.bullets {
+    padding-left: 10px;
+}
+#contentwrap {
+    overflow: hidden;
+}
+body .allowBtn {
+    margin-right: 25px;
+}
+body .allowBtn, body .denyBtn {
+    margin-top: 15px;
+}
+.oauthRevokeToken {
+    clear: both;
+    text-align: center;
+}
+.oauthRevokeTable {
+    margin-left: auto;
+    margin-right: auto;
+}
+h2 {
+    font-size: 16pt;
+}

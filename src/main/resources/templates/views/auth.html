@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="http://techsupport.kpscorp.jp/templates/newkokyakuroku/favicon.ico"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/common.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/extended.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/elements.css|"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="|${baseUrl}/resources/security_page.css|"
+    />
+    <style type="text/css">
+      #main-logo {
+        display: block;
+        font-size: 30pt;
+        height: 80px;
+        overflow: hidden;
+        position: absolute;
+        width: 300px;
+        z-index: 12;
+        margin-top: 0px;
+        padding-top: 20px;
+        padding-left: 10px;
+        color: Snow;
+      }
+    </style>
+    <title>印刷データ無し</title>
+  </head>
+  <body>
+    <div id="pagewrap">
+      <a id="main-logo" href="http://techsupport.kpscorp.jp/reportsconnect.html"
+        >ReportsConnect</a
+      >
+      <div id="headerwrap">
+        <div id="header">
+          <div id="headertext">KPSの印刷ソリューション</div>
+        </div>
+      </div>
+      <div id="contentwrap">
+        <div class="oauthcontent" id="oauthcontent" style="height: 259px">
+          <div id="client_details" style="padding-top: 50px">
+            <img th:src="|${baseUrl}/resources/ReportsConnect.png|" />
+            <div id="client_description">認証処理</div>
+          </div>
+          <div class="arrow"></div>
+          <div id="perms_wrap" style="padding-top: 60px">
+            <h2 id="shorih">認証処理が行われました。</h2>
+            <div id="acceptdeny">
+              <input
+                type="button"
+                title="閉じる"
+                class="btnPrimary btn allowBtn"
+                value=" 閉じる "
+                onclick="window.close();"
+              />
+            </div>
+          </div>
+        </div>
+        &nbsp;
+      </div>
+    </div>
+  </body>
+</html>

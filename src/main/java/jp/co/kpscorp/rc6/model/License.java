@@ -3,19 +3,21 @@ package jp.co.kpscorp.rc6.model;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import lombok.Data;
 
 @Entity
 @Table(name = "license")
+@Data
 public class License {
 
 	@Id
@@ -33,62 +35,6 @@ public class License {
 	@OneToMany(mappedBy = "licenseBean")
 	private List<Organization> organizations;
 
-	public String getLicensename() {
-		return licensename;
-	}
-
-	public void setLicensename(String licensename) {
-		this.licensename = licensename;
-	}
-
-	public Integer getMaxpage() {
-		return maxpage;
-	}
-
-	public void setMaxpage(Integer maxpage) {
-		this.maxpage = maxpage;
-	}
-
-	public Integer getMaxmen() {
-		return maxmen;
-	}
-
-	public void setMaxmen(Integer maxmen) {
-		this.maxmen = maxmen;
-	}
-
-	public String getServerurl() {
-		return serverurl;
-	}
-
-	public void setServerurl(String serverurl) {
-		this.serverurl = serverurl;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Timestamp getLastmodifieddate() {
-		return lastmodifieddate;
-	}
-
-	public void setLastmodifieddate(Timestamp lastmodifieddate) {
-		this.lastmodifieddate = lastmodifieddate;
-	}
-
-	public List<Usertbl> getUsers() {
-		return users;
-	}
-
-	public void setUsers(List<Usertbl> users) {
-		this.users = users;
-	}
-
 	@PreUpdate
 	void preUpdate() {
 		lastmodifieddate = new Timestamp(System.currentTimeMillis());
@@ -97,14 +43,6 @@ public class License {
 	@PrePersist
 	void preInsert() {
 		lastmodifieddate = new Timestamp(System.currentTimeMillis());
-	}
-
-	public List<Organization> getOrganizations() {
-		return organizations;
-	}
-
-	public void setOrganizations(List<Organization> organizations) {
-		this.organizations = organizations;
 	}
 
 }

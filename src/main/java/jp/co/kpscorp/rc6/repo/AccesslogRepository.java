@@ -10,4 +10,6 @@ import jp.co.kpscorp.rc6.model.Accesslog;
 @Repository
 public interface AccesslogRepository extends JpaRepository<Accesslog, Integer> {
 	List<Accesslog> findByUseridLike(String uid);
+
+	List<Accesslog> findByOrgidAndUserid(String orgid, String userid);
 }
