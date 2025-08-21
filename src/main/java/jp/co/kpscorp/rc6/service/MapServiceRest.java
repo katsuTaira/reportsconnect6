@@ -28,18 +28,36 @@ import org.json.simple.JSONValue;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import jp.co.kpscorp.rc6.component.MapService;
+import jp.co.kpscorp.rc6.component.PrintServiceMapSuper;
+import jp.co.kpscorp.rc6.component.PrintSource;
+import jp.co.kpscorp.rc6.component.RCException;
+import jp.co.kpscorp.rc6.component.Settings;
+import jp.co.kpscorp.rc6.component.Settings.Userprop;
+import jp.co.kpscorp.rc6.component.ThreadMap;
+import jp.co.kpscorp.rc6.component.Utils;
 import jp.co.kpscorp.rc6.model.RcPmap;
-import jp.co.kpscorp.rc6.service.DownloadService.RCException;
-import jp.co.kpscorp.rc6.service.Settings.Userprop;
 
 @Service
 @Scope("prototype")
-public class MapServiceRest {
+public class MapServiceRest implements MapService {
 
 	protected RcPmap rcPmap;
 
-	protected long mapsize;
-	protected PrintSource<Map<String, ?>> printSource;
+	@Override
+	public long getMapsize() {
+		return mapsize;
+	}
+
+	@Override
+	public void setMapsize(long mapsize) {
+		this.mapsize = mapsize;
+	}
+
+	private long mapsize = 0;
+
+	// protected PrintSource<Map<String, ?>> printSource; MapServiceRestには
+	// PrintSourceは持たない
 	protected Settings.Userprop up = (Userprop) ThreadMap.get().get(
 			Settings.TH_USRPROP);
 
@@ -47,16 +65,17 @@ public class MapServiceRest {
 			PrintSource<Map<String, ?>> printSource) {
 		super();
 		this.rcPmap = rcPmap;
-		this.printSource = printSource;
+		// this.printSource = printSource;
 		this.mapsize = printSource.getMapsize();
 
 	}
 
+	@Override
 	public List<Map<String, ?>> queryToMap(String ql) throws Exception {
 		List<Map<String, ?>> l = new ArrayList<Map<String, ?>>();
-		String s = rcPmap.pmap.get(Downloder.JSonKey);
+		String s = rcPmap.getPmap().get(Utils.JSonKey);
 		// API Ver 設定可能に 2015/7/7
-		String apiv = rcPmap.pmap.get(Downloder.apivKey);
+		String apiv = rcPmap.getPmap().get(Utils.apivKey);
 		JSONObject jo = (JSONObject) JSONValue.parse(s);
 		String tk = (String) jo.get("access_token");
 		String surl = (String) jo.get("instance_url");
@@ -156,8 +175,6 @@ public class MapServiceRest {
 			res.add(o);
 		}
 		// printSource.setMapsize(mapsize);
-		printSource.setMapsize(printSource.getMapsize() + mapsize); //
-		System.out.println("Map size:" + mapsize / 1000 + "kb");
 		return res;
 
 	}
@@ -211,12 +228,12 @@ public class MapServiceRest {
 					String s = jo.get(key).toString();
 					mapsize += s.length();
 					if (up != null && mapsize > up.getLicense().getMaxmen()) {
-						throw new RCException(DownloadService.memEx
+						throw new RCException(PrintServiceMapSuper.memEx
 								+ up.getLicense().getMaxmen() / 1000 + "kb");
 					}
 				}
 				if (jo.get(key) == null
-						&& "true".equals(rcPmap.pmap.get(Downloder.null2blankKey))
+						&& "true".equals(rcPmap.getPmap().get(Utils.null2blankKey))
 						&& !prop.endsWith("__r") && !prop.endsWith("s")) {
 					// Nullを空文字に置き換え(ただし、関連(__r,s)は除く
 					o.put(prop, "");

@@ -11,19 +11,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.sforce.soap.partner.PartnerConnection;
-
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.kpscorp.rc6.service.ExportReporter;
-import jp.co.kpscorp.rc6.service.PrepareResponse;
-import jp.co.kpscorp.rc6.service.PrintServiceException;
-import jp.co.kpscorp.rc6.service.PrintSource;
-import jp.co.kpscorp.rc6.service.TxtResponse;
+import jp.co.kpscorp.rc6.component.Settings.Userprop;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -31,6 +26,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import net.sf.jasperreports.repo.FileRepositoryPersistenceServiceFactory;
 import net.sf.jasperreports.repo.FileRepositoryService;
 import net.sf.jasperreports.repo.PersistenceServiceFactory;
@@ -38,7 +34,7 @@ import net.sf.jasperreports.repo.RepositoryService;
 
 public class PrintServiceMapSuper implements PrintService {
 
-	protected PartnerConnection connection;
+	// protected PartnerConnection connection;
 
 	protected ExportReporter exportReporter;
 
@@ -61,6 +57,10 @@ public class PrintServiceMapSuper implements PrintService {
 	protected Locale locale = new Locale("ja", "JP");
 
 	protected String ql;
+
+	public static final String memEx = "Report size too large:";
+
+	public static final String pageEx = "Report pages larger than ";
 
 	public static final String nojrexlMsg = "xmlPath path can't be null!";
 
@@ -107,9 +107,9 @@ public class PrintServiceMapSuper implements PrintService {
 	 * jp.co.kpscorp.component.PrintService#setConnection(com.sforce.soap.partner
 	 * .PartnerConnection)
 	 */
-	public void setConnection(PartnerConnection connection) {
-		this.connection = connection;
-	}
+	// public void setConnection(PartnerConnection connection) {
+	// this.connection = connection;
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -178,7 +178,37 @@ public class PrintServiceMapSuper implements PrintService {
 		JasperReport jasperReport;
 		// テンプレートXMLのコンパイル
 		System.out.println("templatePath:" + templatePath);
-		jasperReport = JasperCompileManager.compileReport(templatePath);
+		// 外字の設定 2025/07/01
+		File f = (File) ThreadMap.get().get(PdfExportReporter.TH_EUDCFILE);
+		String str1 = null;
+		if (f != null && f.exists()) {
+			str1 = f.getAbsolutePath();
+		} else {
+			String eudcFilename = "EUDC.TTF";
+			str1 = ".fonts/EUDC/" + eudcFilename;
+		}
+		SimpleJasperReportsContext context = new SimpleJasperReportsContext();
+		File eudcFile = new File(str1);
+		if (eudcFile.exists()) {
+			String xmlFilePath = eudcFile.getParentFile().getAbsolutePath() +
+					File.separator + "fonts.xml";
+			DynamicFontXmlGenerator.generateFontXml(
+					eudcFile.getAbsolutePath(), new File(xmlFilePath).toPath());
+			// JRPropertiesUtil.getInstance(context).setProperty(
+			// "net.sf.jasperreports.extension.registry.factory.fonts",
+			// "net.sf.jasperreports.engine.fonts.SimpleFontExtensionsRegistryFactory");
+			// JRPropertiesUtil.getInstance(context).setProperty(
+			// "net.sf.jasperreports.extension.simple.font.families.eudc",
+			// xmlFilePath);
+			// ExtensionsEnvironment.setThreadExtensionsRegistry(fontExtensionsRegistry);
+			MyExtensionRegistory myExtensionsRegistry = new MyExtensionRegistory(
+					xmlFilePath);
+			ExtensionsEnvironment.setThreadExtensionsRegistry(myExtensionsRegistry);
+			jasperReport = JasperCompileManager.compileReport(templatePath);
+		} else {
+			jasperReport = JasperCompileManager.compileReport(templatePath);
+		}
+
 		// JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(
 		// source.getBeanList());
 
@@ -201,7 +231,6 @@ public class PrintServiceMapSuper implements PrintService {
 		// };
 		// omap.put("REPORT_FILE_RESOLVER", fileResolver);
 
-		SimpleJasperReportsContext context = new SimpleJasperReportsContext();
 		FileRepositoryService repo = new FileRepositoryService(context, basePath, true);
 		context.setExtensions(RepositoryService.class,
 				Collections.singletonList(repo));
@@ -210,6 +239,13 @@ public class PrintServiceMapSuper implements PrintService {
 		// JasperPrint print = JasperFillManager
 		// .fillReport(jasperReport, omap, ds);
 		JasperPrint print = JasperFillManager.getInstance(context).fill(jasperReport, omap, ds);
+		// pageSize check 2025/06/26
+		Settings.Userprop up = (Userprop) ThreadMap.get().get(
+				Settings.TH_USRPROP);
+		if (print.getPages().size() > up.getLicense().getMaxpage()) {
+			throw new JRException(PrintServiceMapSuper.pageEx + up.getLicense().getMaxpage()
+					+ "page");
+		}
 		exportReporter.exportReport(print, byteOut);
 		return byteOut;
 	}

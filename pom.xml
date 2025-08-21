@@ -9,9 +9,10 @@
 		<version>3.3.0</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>jp.co.kpscorp</groupId>
 	<artifactId>reportsconnect6</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>reportsconnect6</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -94,13 +95,13 @@
 			<version>1.0</version>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- fonts ipafont e.t.c. -->
+		<!-- fonts ipafont e.t.c. 
 		<dependency>
 			<groupId>jp.co.kpscorp</groupId>
 			<artifactId>kps-fonts</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-
+		-->
 		<!-- https://mvnrepository.com/artifact/net.sf.barcode4j/barcode4j -->
 		<dependency>
 			<groupId>net.sf.barcode4j</groupId>
@@ -190,24 +191,7 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.liferay/com.sforce.soap.partner -->
-		<dependency>
-			<groupId>com.liferay</groupId>
-			<artifactId>com.sforce.soap.partner</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.force.api/force-wsc -->
-		<dependency>
-			<groupId>com.force.api</groupId>
-			<artifactId>force-wsc</artifactId>
-			<version>64.0.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.force.api/force-partner-api -->
-		<dependency>
-			<groupId>com.force.api</groupId>
-			<artifactId>force-partner-api</artifactId>
-			<version>64.0.3</version>
-		</dependency>
+
 		<!-- API, java.xml.bind module -->
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
@@ -222,6 +206,15 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- 生成するwarの名前を指定する -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<warName>rc6</warName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -5,13 +5,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import com.sforce.soap.partner.PartnerConnection;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.kpscorp.rc6.service.ExportReporter;
-import jp.co.kpscorp.rc6.service.PrepareResponse;
-import jp.co.kpscorp.rc6.service.PrintSource;
 
 public interface PrintService {
 
@@ -21,7 +16,7 @@ public interface PrintService {
 	public void prepareResponse(ByteArrayOutputStream byteOut,
 			PrintSource<Map<String, ?>> source) throws IOException;
 
-	public void setConnection(PartnerConnection connection);
+	// public void setConnection(PartnerConnection connection);
 
 	public void setRequest(HttpServletRequest request);
 

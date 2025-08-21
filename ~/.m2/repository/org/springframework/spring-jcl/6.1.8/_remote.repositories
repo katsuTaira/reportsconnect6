@@ -1,4 +1,6 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Jun 05 17:13:04 JST 2025
+#Fri Jul 04 12:57:25 JST 2025
+spring-jcl-6.1.8-javadoc.jar>central=
+spring-jcl-6.1.8-sources.jar>central=
 spring-jcl-6.1.8.jar>central=
 spring-jcl-6.1.8.pom>central=

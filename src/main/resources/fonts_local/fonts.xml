@@ -1,0 +1,39 @@
+<fontFamilies>
+    <fontFamily name="IPAmj明朝">
+        <normal><![CDATA[fonts_local/IPAmjMincho.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+    </fontFamily>
+    <fontFamily name="yubinbcd">
+        <normal><![CDATA[fonts_local/yubinbcd.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+    </fontFamily>
+    <fontFamily name="IPAexゴシック">
+        <normal><![CDATA[fonts_local/IPAexGothic.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+    </fontFamily>
+    <fontFamily name="IPAex明朝">
+        <normal><![CDATA[fonts_local/IPAexMincho.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+    </fontFamily>
+    <fontFamily name="IPAゴシック">
+        <normal><![CDATA[fonts_local/IPAGothic.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+    </fontFamily>
+    <fontFamily name="IPA明朝">
+        <normal><![CDATA[fonts_local/IPAMincho.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <pdfEncoding><![CDATA[Identity-H]]></pdfEncoding>
+    </fontFamily>
+    <fontFamily name="OCRB">
+        <normal><![CDATA[fonts_local/OCRB.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+    </fontFamily>
+    <fontFamily name="Times-Roman">
+        <normal><![CDATA[fonts_local/times-roman.ttf]]></normal>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+    </fontFamily>
+</fontFamilies>

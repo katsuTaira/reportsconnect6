@@ -1,14 +1,12 @@
 package jp.co.kpscorp.rc6.model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -30,10 +28,10 @@ public class License {
 	@Column
 	@Version
 	private Timestamp lastmodifieddate;
-	@OneToMany(mappedBy = "licenseBean")
-	private List<Usertbl> users;
-	@OneToMany(mappedBy = "licenseBean")
-	private List<Organization> organizations;
+	// @OneToMany(mappedBy = "licenseBean")
+	// private List<Usertbl> users;
+	// @OneToMany(mappedBy = "licenseBean")
+	// private List<Organization> organizations;
 
 	@PreUpdate
 	void preUpdate() {

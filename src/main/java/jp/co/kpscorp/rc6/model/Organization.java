@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
 import lombok.Data;
 
@@ -33,6 +34,16 @@ public class Organization {
 	@ManyToOne
 	@JoinColumn(name = "license")
 	private License licenseBean;
+	@Transient
+	private String licensename;
+
+	public String getLicensename() {
+		if (licenseBean != null) {
+			return licenseBean.getLicensename();
+		}
+		return licensename;
+	}
+
 	@Version
 	private Timestamp lastmodifieddate;
 

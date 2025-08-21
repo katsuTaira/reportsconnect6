@@ -2,12 +2,10 @@ package jp.co.kpscorp.rc6.model;
 
 import java.util.Map;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+public interface RcPmap {
 
-@Component
-@Scope("request")
-public class RcPmap {
-    public Map<String, String> pmap;
+    Map<String, String> getPmap();
+
+    void setPmap(Map<String, String> pmap);
 
 }

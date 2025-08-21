@@ -1,4 +1,6 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Wed Jun 18 16:26:46 JST 2025
+#Thu Aug 07 15:55:49 JST 2025
+openpdf-1.3.32-javadoc.jar>central=
+openpdf-1.3.32-sources.jar>central=
 openpdf-1.3.32.jar>central=
 openpdf-1.3.32.pom>central=

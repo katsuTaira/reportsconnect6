@@ -52,8 +52,15 @@ public class Accesslog {
 		lastmodifieddate = new Timestamp(System.currentTimeMillis());
 	}
 
+	public Accesslog() {
+		// Default constructor
+		super();
+	}
+
 	public Accesslog(String oid, String uid) {
-		// TODO Auto-generated constructor stub
+		super();
+		this.orgid = oid;
+		this.userid = uid;
 	}
 
 }

@@ -26,13 +26,31 @@ public class Usertbl {
 	@ManyToOne
 	@JoinColumn(name = "organization")
 	private Organization organizationBean;
+	@Transient
+	private String orgid;
+
+	public String getOrgid() {
+		if (organizationBean != null) {
+			return organizationBean.getOrgid();
+		}
+		return orgid;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "license")
 	private License licenseBean;
-	@Version
-	private Timestamp lastmodifieddate;
 	@Transient
 	private String licensename;
+
+	public String getLicensename() {
+		if (licenseBean != null) {
+			return licenseBean.getLicensename();
+		}
+		return licensename;
+	}
+
+	@Version
+	private Timestamp lastmodifieddate;
 
 	@PreUpdate
 	void preUpdate() {

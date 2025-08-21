@@ -98,16 +98,6 @@
                             </form>
                           </td>
                         </tr>
-                        <tr>
-                          <td class="labelCol  first "><label>CSVデータソース</label></td>
-                          <td class="data2Col  first ">
-                            <form method="POST" action="uc">
-                              <input type="hidden" value="CsvDataSource.csv" name="ksp_filename" />
-                              <textarea rows="6" cols="115" name="kps_textarea" th:text="${cw.csv}"></textarea>
-                              <input type="submit" value="ファイルCSVデータソースのダウンロード" />
-                            </form>
-                          </td>
-                        </tr>
                         <tr th:each="csvw : ${cw.csvws}">
                           <td class="labelCol  first ">
                             <label>CSVデータソース：<span th:text="${csvw.name}"></span></label>

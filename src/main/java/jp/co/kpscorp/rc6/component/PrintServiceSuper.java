@@ -9,19 +9,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.sforce.soap.partner.PartnerConnection;
-
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jp.co.kpscorp.rc6.service.ExportReporter;
-import jp.co.kpscorp.rc6.service.PrepareResponse;
-import jp.co.kpscorp.rc6.service.PrintServiceException;
-import jp.co.kpscorp.rc6.service.PrintSource;
-import jp.co.kpscorp.rc6.service.TxtResponse;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -31,7 +24,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 public class PrintServiceSuper implements PrintService {
 
-	protected PartnerConnection connection;
+	// protected PartnerConnection connection;
 
 	protected ExportReporter exportReporter;
 
@@ -88,9 +81,9 @@ public class PrintServiceSuper implements PrintService {
 	 * jp.co.kpscorp.component.PrintService#setConnection(com.sforce.soap.partner
 	 * .PartnerConnection)
 	 */
-	public void setConnection(PartnerConnection connection) {
-		this.connection = connection;
-	}
+	// public void setConnection(PartnerConnection connection) {
+	// this.connection = connection;
+	// }
 
 	/*
 	 * (non-Javadoc)

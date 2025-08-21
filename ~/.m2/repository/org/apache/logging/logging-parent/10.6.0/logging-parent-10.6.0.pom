@@ -15,10 +15,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache</groupId>
@@ -143,76 +141,74 @@
     <bnd.annotation.version>7.0.0</bnd.annotation.version>
     <error-prone.version>2.24.1</error-prone.version>
     <sbom.xslt>&lt;xsl:stylesheet version="1.0"
-      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-      xmlns="http://cyclonedx.org/schema/bom/1.5"
-      xmlns:xalan="http://xml.apache.org/xalan"
-      xmlns:cdx14="http://cyclonedx.org/schema/bom/1.4"
-      xmlns:cdx15="http://cyclonedx.org/schema/bom/1.5"
-      exclude-result-prefixes="xalan cdx14 cdx15">
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns="http://cyclonedx.org/schema/bom/1.5"
+    xmlns:xalan="http://xml.apache.org/xalan"
+    xmlns:cdx14="http://cyclonedx.org/schema/bom/1.4"
+    xmlns:cdx15="http://cyclonedx.org/schema/bom/1.5"
+    exclude-result-prefixes="xalan cdx14 cdx15">
 
-      &lt;xsl:param name="sbom.serialNumber"/>
-      &lt;xsl:param name="vdr.url"/>
-      &lt;xsl:output method="xml"
-      version="1.0"
-      encoding="UTF-8"
-      indent="yes"
-      xalan:indent-amount="2"
-      xalan:line-separator="&amp;#10;"/>
+  &lt;xsl:param name="sbom.serialNumber"/>
+  &lt;xsl:param name="vdr.url"/>
+  &lt;xsl:output method="xml"
+              version="1.0"
+              encoding="UTF-8"
+              indent="yes"
+              xalan:indent-amount="2"
+              xalan:line-separator="&amp;#10;"/>
 
-      &lt;!-- Fixes the license formatting -->
-      &lt;xsl:template match="/">
-      &lt;xsl:text>&amp;#10;&lt;/xsl:text>
-      &lt;xsl:apply-templates />
-      &lt;/xsl:template>
+  &lt;!-- Fixes the license formatting -->
+  &lt;xsl:template match="/">
+    &lt;xsl:text>&amp;#10;&lt;/xsl:text>
+    &lt;xsl:apply-templates />
+  &lt;/xsl:template>
 
-      &lt;!-- Standard copy template -->
-      &lt;xsl:template match="@*|node()">
-      &lt;xsl:copy>
+  &lt;!-- Standard copy template -->
+  &lt;xsl:template match="@*|node()">
+    &lt;xsl:copy>
       &lt;xsl:apply-templates select="@*" />
       &lt;xsl:apply-templates />
-      &lt;/xsl:copy>
-      &lt;/xsl:template>
+    &lt;/xsl:copy>
+  &lt;/xsl:template>
 
-      &lt;!-- Bump the SBOM schema version from `1.4` to `1.5` -->
-      &lt;xsl:template match="cdx14:*">
-      &lt;xsl:element name="{local-name()}" namespace="http://cyclonedx.org/schema/bom/1.5">
+  &lt;!-- Bump the SBOM schema version from `1.4` to `1.5` -->
+  &lt;xsl:template match="cdx14:*">
+    &lt;xsl:element name="{local-name()}" namespace="http://cyclonedx.org/schema/bom/1.5">
       &lt;xsl:apply-templates select="@*" />
       &lt;xsl:apply-templates />
-      &lt;/xsl:element>
-      &lt;/xsl:template>
+    &lt;/xsl:element>
+  &lt;/xsl:template>
 
-      &lt;!-- Add the SBOM `serialNumber` -->
-      &lt;xsl:template match="cdx14:bom">
-      &lt;bom>
+  &lt;!-- Add the SBOM `serialNumber` -->
+  &lt;xsl:template match="cdx14:bom">
+    &lt;bom>
       &lt;xsl:attribute name="version">
-      &lt;xsl:value-of select="1"/>
+        &lt;xsl:value-of select="1"/>
       &lt;/xsl:attribute>
       &lt;xsl:attribute name="serialNumber">
-      &lt;xsl:text>urn:uuid:&lt;/xsl:text>
-      &lt;xsl:value-of select="$sbom.serialNumber"/>
+        &lt;xsl:text>urn:uuid:&lt;/xsl:text>
+        &lt;xsl:value-of select="$sbom.serialNumber"/>
       &lt;/xsl:attribute>
       &lt;xsl:apply-templates />
-      &lt;/bom>
-      &lt;/xsl:template>
+    &lt;/bom>
+  &lt;/xsl:template>
 
-      &lt;!-- Add the link to the VDR -->
-      &lt;xsl:template match="cdx14:externalReferences[starts-with(preceding-sibling::cdx14:group,
-      'org.apache.logging')]">
-      &lt;externalReferences>
+  &lt;!-- Add the link to the VDR -->
+  &lt;xsl:template match="cdx14:externalReferences[starts-with(preceding-sibling::cdx14:group, 'org.apache.logging')]">
+    &lt;externalReferences>
       &lt;xsl:apply-templates/>
       &lt;reference>
-      &lt;xsl:attribute name="type">vulnerability-assertion&lt;/xsl:attribute>
-      &lt;url>
-      &lt;xsl:value-of select="$vdr.url"/>
-      &lt;/url>
+        &lt;xsl:attribute name="type">vulnerability-assertion&lt;/xsl:attribute>
+        &lt;url>
+          &lt;xsl:value-of select="$vdr.url"/>
+        &lt;/url>
       &lt;/reference>
-      &lt;/externalReferences>
-      &lt;/xsl:template>
+    &lt;/externalReferences>
+  &lt;/xsl:template>
 
-      &lt;/xsl:stylesheet></sbom.xslt>
+&lt;/xsl:stylesheet></sbom.xslt>
     <minimalJavaBuildVersion>[17,18)</minimalJavaBuildVersion>
-    <bnd-bundle-symbolicname>
-      $[project.groupId].$[subst;$[subst;$[project.artifactId];log4j-];[^A-Za-z0-9];.]</bnd-bundle-symbolicname>
+    <bnd-bundle-symbolicname>$[project.groupId].$[subst;$[subst;$[project.artifactId];log4j-];[^A-Za-z0-9];.]</bnd-bundle-symbolicname>
     <palantir-java-format.version>2.39.0</palantir-java-format.version>
     <beanshell-maven-plugin.version>1.4</beanshell-maven-plugin.version>
     <vdr.url>https://logging.apache.org/cyclonedx/vdr.xml</vdr.url>
@@ -473,41 +469,38 @@
             </goals>
             <configuration>
               <script>import java.io.*;
-                import java.nio.file.*;
-                import java.util.*;
-                import jakarta.xml.transform.*;
-                import jakarta.xml.transform.stream.*;
-                import org.apache.commons.codec.digest.*;
+import java.nio.file.*;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import org.apache.commons.codec.digest.*;
 
-                // Compute parameters
-                final String xslt = project.getProperties().getProperty("sbom.xslt");
-                final File pomFile = project.getModel().getPomFile();
-                final byte[] digest = new
-                DigestUtils(MessageDigestAlgorithms.SHA_256).digest(pomFile);
-                final UUID bomSerialNumber = UUID.nameUUIDFromBytes(digest);
-                final String vdrUrl =
-                Objects.requireNonNull(project.getProperties().getProperty("vdr.url"), "vdr.url");
+    // Compute parameters
+    final String xslt = project.getProperties().getProperty("sbom.xslt");
+    final File pomFile = project.getModel().getPomFile();
+    final byte[] digest = new DigestUtils(MessageDigestAlgorithms.SHA_256).digest(pomFile);
+    final UUID bomSerialNumber = UUID.nameUUIDFromBytes(digest);
+    final String vdrUrl = Objects.requireNonNull(project.getProperties().getProperty("vdr.url"), "vdr.url");
 
-                // Move original SBOM file
-                final Path basedir = project.getBasedir().toPath();
-                final Path destPath = basedir.resolve("target/bom.xml");
-                final Path sourcePath = basedir.resolve("target/bom.orig.xml");
-                if (!Files.isReadable(destPath)) {
-                System.out.println("No CycloneDX SBOM file found, skipping transformation.");
-                return;
-                }
-                Files.move(destPath, sourcePath, new CopyOption[]
-                {StandardCopyOption.REPLACE_EXISTING});
+    // Move original SBOM file
+    final Path basedir = project.getBasedir().toPath();
+    final Path destPath = basedir.resolve("target/bom.xml");
+    final Path sourcePath = basedir.resolve("target/bom.orig.xml");
+    if (!Files.isReadable(destPath)) {
+      System.out.println("No CycloneDX SBOM file found, skipping transformation.");
+      return;
+    }
+    Files.move(destPath, sourcePath, new CopyOption[] {StandardCopyOption.REPLACE_EXISTING});
 
-                // Apply XSLT transformation
-                final StreamSource xsltSource = new StreamSource(new StringReader(xslt));
-                final TransformerFactory factory = TransformerFactory.newInstance();
-                final Transformer transformer = factory.newTransformer(xsltSource);
-                transformer.setParameter("sbom.serialNumber", bomSerialNumber.toString());
-                transformer.setParameter("vdr.url", vdrUrl);
-                final StreamSource source = new StreamSource(sourcePath.toUri().toASCIIString());
-                final StreamResult result = new StreamResult(destPath.toUri().toASCIIString());
-                transformer.transform(source, result);</script>
+    // Apply XSLT transformation
+    final StreamSource xsltSource = new StreamSource(new StringReader(xslt));
+    final TransformerFactory factory = TransformerFactory.newInstance();
+    final Transformer transformer = factory.newTransformer(xsltSource);
+    transformer.setParameter("sbom.serialNumber", bomSerialNumber.toString());
+    transformer.setParameter("vdr.url", vdrUrl);
+    final StreamSource source = new StreamSource(sourcePath.toUri().toASCIIString());
+    final StreamResult result = new StreamResult(destPath.toUri().toASCIIString());
+    transformer.transform(source, result);</script>
             </configuration>
           </execution>
         </executions>
@@ -635,21 +628,21 @@
           <java>
             <licenseHeader>
               <content>/*
-                * Licensed to the Apache Software Foundation (ASF) under one or more
-                * contributor license agreements. See the NOTICE file distributed with
-                * this work for additional information regarding copyright ownership.
-                * The ASF licenses this file to you under the Apache License, Version 2.0
-                * (the "License"); you may not use this file except in compliance with
-                * the License. You may obtain a copy of the License at
-                *
-                * http://www.apache.org/licenses/LICENSE-2.0
-                *
-                * Unless required by applicable law or agreed to in writing, software
-                * distributed under the License is distributed on an "AS IS" BASIS,
-                * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                * See the License for the specific language governing permissions and
-                * limitations under the License.
-                */</content>
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</content>
             </licenseHeader>
             <palantirJavaFormat>
               <version>${palantir-java-format.version}</version>
@@ -658,22 +651,22 @@
           <pom>
             <licenseHeader>
               <content>&lt;?xml version="1.0" encoding="UTF-8"?>
-                &lt;!--
-                ~ Licensed to the Apache Software Foundation (ASF) under one or more
-                ~ contributor license agreements. See the NOTICE file distributed with
-                ~ this work for additional information regarding copyright ownership.
-                ~ The ASF licenses this file to you under the Apache License, Version 2.0
-                ~ (the "License"); you may not use this file except in compliance with
-                ~ the License. You may obtain a copy of the License at
-                ~
-                ~ http://www.apache.org/licenses/LICENSE-2.0
-                ~
-                ~ Unless required by applicable law or agreed to in writing, software
-                ~ distributed under the License is distributed on an "AS IS" BASIS,
-                ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                ~ See the License for the specific language governing permissions and
-                ~ limitations under the License.
-                --></content>
+&lt;!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to you under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  --></content>
               <delimiter>&lt;project</delimiter>
             </licenseHeader>
             <sortPom>
@@ -691,22 +684,22 @@
               </excludes>
               <licenseHeader>
                 <content>&lt;?xml version="1.0" encoding="UTF-8"?>
-                  &lt;!--
-                  ~ Licensed to the Apache Software Foundation (ASF) under one or more
-                  ~ contributor license agreements. See the NOTICE file distributed with
-                  ~ this work for additional information regarding copyright ownership.
-                  ~ The ASF licenses this file to you under the Apache License, Version 2.0
-                  ~ (the "License"); you may not use this file except in compliance with
-                  ~ the License. You may obtain a copy of the License at
-                  ~
-                  ~ http://www.apache.org/licenses/LICENSE-2.0
-                  ~
-                  ~ Unless required by applicable law or agreed to in writing, software
-                  ~ distributed under the License is distributed on an "AS IS" BASIS,
-                  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                  ~ See the License for the specific language governing permissions and
-                  ~ limitations under the License.
-                  --></content>
+&lt;!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to you under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  --></content>
                 <delimiter>&lt;(!DOCTYPE|\w)</delimiter>
               </licenseHeader>
               <endWithNewline />
@@ -718,21 +711,21 @@
               </includes>
               <licenseHeader>
                 <content>#
-                  # Licensed to the Apache Software Foundation (ASF) under one or more
-                  # contributor license agreements. See the NOTICE file distributed with
-                  # this work for additional information regarding copyright ownership.
-                  # The ASF licenses this file to you under the Apache License, Version 2.0
-                  # (the "License"); you may not use this file except in compliance with
-                  # the License. You may obtain a copy of the License at
-                  #
-                  # http://www.apache.org/licenses/LICENSE-2.0
-                  #
-                  # Unless required by applicable law or agreed to in writing, software
-                  # distributed under the License is distributed on an "AS IS" BASIS,
-                  # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                  # See the License for the specific language governing permissions and
-                  # limitations under the License.
-                  #</content>
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to you under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#</content>
                 <delimiter>(##|[^#])</delimiter>
               </licenseHeader>
               <endWithNewline />
@@ -748,21 +741,21 @@
             </includes>
             <licenseHeader>
               <content>#
-                # Licensed to the Apache Software Foundation (ASF) under one or more
-                # contributor license agreements. See the NOTICE file distributed with
-                # this work for additional information regarding copyright ownership.
-                # The ASF licenses this file to you under the Apache License, Version 2.0
-                # (the "License"); you may not use this file except in compliance with
-                # the License. You may obtain a copy of the License at
-                #
-                # http://www.apache.org/licenses/LICENSE-2.0
-                #
-                # Unless required by applicable law or agreed to in writing, software
-                # distributed under the License is distributed on an "AS IS" BASIS,
-                # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                # See the License for the specific language governing permissions and
-                # limitations under the License.
-                #</content>
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to you under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#</content>
               <delimiter>(##|[^#])</delimiter>
             </licenseHeader>
             <endWithNewline />
@@ -797,32 +790,27 @@
         </executions>
         <configuration>
           <bnd># `Bundle-DocURL` uses `project.url`.
-            # This is set to `${project.parent.url}${project.artifactId}` through Maven's
-            inheritance assembly[1].
+            # This is set to `${project.parent.url}${project.artifactId}` through Maven's inheritance assembly[1].
             # This eventually produces incorrect values.
             # Hence, we remove them from the produced descriptor.
             #
-            # `Bundle-SCM` uses `project.scm.url` and suffers from the same inheritance problem
-            `Bundle-DocURL` has.
+            # `Bundle-SCM` uses `project.scm.url` and suffers from the same inheritance problem `Bundle-DocURL` has.
             #
             # [1] https://maven.apache.org/ref/3.9.4/maven-model-builder/#inheritance-assembly
-            # Inheritance assembly can be disabled for certain properties, e.g., `project.url`.
-            # Though this would necessitate changes in the root `pom.xml`s of parented projects.
+            #     Inheritance assembly can be disabled for certain properties, e.g., `project.url`.
+            #     Though this would necessitate changes in the root `pom.xml`s of parented projects.
             #
-            # `Bundle-Developers` is removed, since it is nothing but noise and occupies quite some
-            real estate.
+            # `Bundle-Developers` is removed, since it is nothing but noise and occupies quite some real estate.
             -removeheaders: Bundle-DocURL,Bundle-SCM,Bundle-Developers
 
             # Create OSGi and JPMS module names based on the `groupId` and `artifactId`.
-            # This almost agrees with `maven-bundle-plugin`, but replaces non-alphanumeric
-            characters
+            # This almost agrees with `maven-bundle-plugin`, but replaces non-alphanumeric characters
             # with full stops `.`.
             Bundle-SymbolicName: $[bnd-bundle-symbolicname]
             -jpms-module-info: $[bnd-jpms-module-info]
 
             # Prevents an execution error in multi-release jars:
-            -fixupmessages.classes_in_wrong_dir: "Classes found in the wrong
-            directory";restrict:=error;is:=warning
+            -fixupmessages.classes_in_wrong_dir: "Classes found in the wrong directory";restrict:=error;is:=warning
 
             # Convert API leakage warnings to errors
             -fixupmessages.priv_refs: "private references";restrict:=warning;is:=error
@@ -830,39 +818,33 @@
             # 1. OSGI modules do not make sense in JPMS
             # 2. BND has a problem detecting the name of multi-release JPMS modules
             -jpms-module-info-options: \
-            $[bnd-extra-module-options],\
-            org.osgi.core;static=true;transitive=false,\
-            org.osgi.framework;static=true;transitive=false,\
-            org.apache.logging.log4j;substitute="log4j-api",\
-            org.apache.logging.log4j.core;substitute="log4j-core"
+              $[bnd-extra-module-options],\
+              org.osgi.core;static=true;transitive=false,\
+              org.osgi.framework;static=true;transitive=false,\
+              org.apache.logging.log4j;substitute="log4j-api",\
+              org.apache.logging.log4j.core;substitute="log4j-core"
 
             # Import all packages by default:
             Import-Package: \
-            $[bnd-extra-package-options],\
-            *
+              $[bnd-extra-package-options],\
+              *
 
             # Allow each project to override the `Multi-Release` header:
             Multi-Release: $[bnd-multi-release]
 
-            # Skipping to set `-jpms-multi-release` to `bnd-multi-release`.
-            # This would generate descriptors in `META-INF/versions/&lt;version>` directories needed
-            for MRJs.
-            # Though we decided to skip it due to following reasons:
-            # 1. It is only needed by a handful of files in `-java9`-suffixed modules of
-            `logging-log4j2`.
-            # Hence, it is effectively insignificant.
-            # 2. `dependency:unpack` and `bnd:bnd-process` executions must be aligned correctly.
-            # See this issue for details: https://github.com/apache/logging-parent/issues/93
-            # Adds certain `Implementation-*` and `Specification-*` entries to the generated
-            `MANIFEST.MF`.
-            # Using these properties is known to be a bad practice:
-            https://github.com/apache/logging-log4j2/issues/1923#issuecomment-1786818254
+# Skipping to set `-jpms-multi-release` to `bnd-multi-release`.
+# This would generate descriptors in `META-INF/versions/&lt;version>` directories needed for MRJs.
+# Though we decided to skip it due to following reasons:
+# 1. It is only needed by a handful of files in `-java9`-suffixed modules of `logging-log4j2`.
+#    Hence, it is effectively insignificant.
+# 2. `dependency:unpack` and `bnd:bnd-process` executions must be aligned correctly.
+# See this issue for details: https://github.com/apache/logging-parent/issues/93
+            # Adds certain `Implementation-*` and `Specification-*` entries to the generated `MANIFEST.MF`.
+            # Using these properties is known to be a bad practice: https://github.com/apache/logging-log4j2/issues/1923#issuecomment-1786818254
             # Users should use `META-INF/maven/&lt;groupId>/&lt;artifactId>/pom.properties` instead.
             # Yet we support it due to backward compatibility reasons.
-            # The issue was reported to `bnd-maven-plugin` too:
-            https://github.com/bndtools/bnd/issues/5855
-            # We set these values to their Maven Archiver defaults:
-            https://maven.apache.org/shared/maven-archiver/#class_manifest
+            # The issue was reported to `bnd-maven-plugin` too: https://github.com/bndtools/bnd/issues/5855
+            # We set these values to their Maven Archiver defaults: https://maven.apache.org/shared/maven-archiver/#class_manifest
             Implementation-Title: ${project.name}
             Implementation-Vendor: ${project.organization.name}
             Implementation-Version: ${project.version}
@@ -1016,14 +998,11 @@
                   <rules>
                     <requireProperty>
                       <property>attachmentFilepathPattern</property>
-                      <message>You must set an `attachmentFilepathPattern` property for the regex
-                        pattern matched against the full filepath for determining attachments to be
-                        included in the distribution!</message>
+                      <message>You must set an `attachmentFilepathPattern` property for the regex pattern matched against the full filepath for determining attachments to be included in the distribution!</message>
                     </requireProperty>
                     <requireProperty>
                       <property>attachmentCount</property>
-                      <message>You must set an `attachmentCount` property for the number of
-                        attachments expected to be found!</message>
+                      <message>You must set an `attachmentCount` property for the number of attachments expected to be found!</message>
                     </requireProperty>
                   </rules>
                   <fail>true</fail>
@@ -1052,129 +1031,116 @@
                     import org.eclipse.jgit.lib.Repository;
                     import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
-                    String outputTimestamp =
-                    project.getProperties().getProperty("project.build.outputTimestamp");
+                    String outputTimestamp = project.getProperties().getProperty("project.build.outputTimestamp");
                     long timestampMillis = java.time.Instant.parse(outputTimestamp).toEpochMilli();
                     zip(String zipFileName, Map pathByFile) {
-                    OutputStream outputStream = new FileOutputStream(zipFileName);
-                    ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-                    try {
-                    for (String file : pathByFile.keySet()) {
-                    Path path = pathByFile.get(file);
-                    // Skip directories, which is tracked by Git only when it is a symlink
-                    if (Files.isDirectory(path, /* required for BSH method resolution: */ new
-                    LinkOption[0])) {
-                    continue;
-                    }
-                    try {
-                    ZipEntry zipEntry = new ZipEntry(file);
-                    zipEntry.setTime(timestampMillis);
-                    zipOutputStream.putNextEntry(zipEntry);
-                    zipOutputStream.write(Files.readAllBytes(path));
-                    zipOutputStream.closeEntry();
-                    } catch (Exception error) {
-                    String message = String.format(
-                    "failed processing file `%s` at path `%s`",
-                    new Object[]{file, path});
-                    throw new RuntimeException(message, error);
-                    }
-                    }
-                    } catch (Exception error) {
-                    String message = String.format("failed creating ZIP archive `%s`", new
-                    Object[]{zipFileName});
-                    Exception extendedError = new RuntimeException(message, error);
-                    // Supplement diagnostics
-                    extendedError.printStackTrace(System.err);
-                    throw extendedError;
-                    } finally {
-                    zipOutputStream.close();
-                    }
+                        OutputStream outputStream = new FileOutputStream(zipFileName);
+                        ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+                        try {
+                            for (String file : pathByFile.keySet()) {
+                                Path path = pathByFile.get(file);
+                                // Skip directories, which is tracked by Git only when it is a symlink
+                                if (Files.isDirectory(path, /* required for BSH method resolution: */ new LinkOption[0])) {
+                                    continue;
+                                }
+                                try {
+                                    ZipEntry zipEntry = new ZipEntry(file);
+                                    zipEntry.setTime(timestampMillis);
+                                    zipOutputStream.putNextEntry(zipEntry);
+                                    zipOutputStream.write(Files.readAllBytes(path));
+                                    zipOutputStream.closeEntry();
+                                } catch (Exception error) {
+                                    String message = String.format(
+                                        "failed processing file `%s` at path `%s`",
+                                        new Object[]{file, path});
+                                    throw new RuntimeException(message, error);
+                                }
+                            }
+                        } catch (Exception error) {
+                            String message = String.format("failed creating ZIP archive `%s`", new Object[]{zipFileName});
+                            Exception extendedError = new RuntimeException(message, error);
+                            // Supplement diagnostics
+                            extendedError.printStackTrace(System.err);
+                            throw extendedError;
+                        } finally {
+                            zipOutputStream.close();
+                        }
                     }
 
                     // Find Git-tracked files
                     SortedMap pathByFile = new TreeMap();
-                    Repository repo = new
-                    FileRepositoryBuilder().readEnvironment().findGitDir().build();
+                    Repository repo = new FileRepositoryBuilder().readEnvironment().findGitDir().build();
                     DirCache repoCache = repo.readDirCache();
                     String repoDirectoryParent = repo.getDirectory().getParent();
-                    for (int repoCacheEntryIndex = 0; repoCacheEntryIndex &lt;
-                    repoCache.getEntryCount(); repoCacheEntryIndex++) {
-                    DirCacheEntry repoCacheEntry = repoCache.getEntry(repoCacheEntryIndex);
-                    String repoCacheEntryPath = repoCacheEntry.getPathString();
-                    pathByFile.put(repoCacheEntryPath, new File(repoDirectoryParent,
-                    repoCacheEntryPath).toPath());
+                    for (int repoCacheEntryIndex = 0; repoCacheEntryIndex &lt; repoCache.getEntryCount(); repoCacheEntryIndex++) {
+                        DirCacheEntry repoCacheEntry = repoCache.getEntry(repoCacheEntryIndex);
+                        String repoCacheEntryPath = repoCacheEntry.getPathString();
+                        pathByFile.put(repoCacheEntryPath, new File(repoDirectoryParent, repoCacheEntryPath).toPath());
                     }
 
                     // Create the source distribution using Git-tracked files
                     zip("target/src.zip", pathByFile);
-                    System.out.format("Generated the source distribution (`src.zip`) containing %d
-                    files.%n", new Object[]{pathByFile.size()});
+                    System.out.format("Generated the source distribution (`src.zip`) containing %d files.%n", new Object[]{pathByFile.size()});
 
                     // Short-circuit if there is no binary distribution expected
                     if (${attachmentCount} == 0) {
-                    return;
+                        return;
                     }
 
                     // Find auxiliary files that will go into the binary distribution
                     SortedMap pathByFile = new TreeMap();
-                    pathByFile.put("RELEASE-NOTES.adoc", new
-                    File("src/site/_release-notes/_${project.version}.adoc").toPath());
+                    pathByFile.put("RELEASE-NOTES.adoc", new File("src/site/_release-notes/_${project.version}.adoc").toPath());
                     pathByFile.put("README.adoc", new File("README.adoc").toPath());
                     pathByFile.put("NOTICE.txt", new File("NOTICE.txt").toPath());
                     pathByFile.put("LICENSE.txt", new File("LICENSE.txt").toPath());
 
                     // Find attachments that will go into the binary distribution
-                    Path projectDir = Paths.get("${maven.multiModuleProjectDirectory}", new
-                    String[0]);
+                    Path projectDir = Paths.get("${maven.multiModuleProjectDirectory}", new String[0]);
                     String attachmentFilepathPattern = "${attachmentFilepathPattern}";
-                    System.out.format("Locating attachments matching the provided pattern: `%s`%n",
-                    new Object[] {attachmentFilepathPattern});
+                    System.out.format("Locating attachments matching the provided pattern: `%s`%n", new Object[] {attachmentFilepathPattern});
                     SortedMap attachmentPathByFile = new TreeMap();
-                    Stream paths = Files.walk(new File(repoDirectoryParent).toPath(), 32, /*
-                    required for BSH method resolution: */ new FileVisitOption[0]);
+                    Stream paths = Files.walk(new File(repoDirectoryParent).toPath(), 32, /* required for BSH method resolution: */ new FileVisitOption[0]);
                     try {
-                    paths.forEach(new Consumer() {
-                    public void accept(Path path) {
-                    if (Files.isRegularFile(path, /* required for BSH method resolution: */ new
-                    LinkOption[0])) {
-                    String relativePath = projectDir.relativize(path).toString();
-                    if (relativePath.matches(attachmentFilepathPattern)) {
-                    attachmentPathByFile.put(path.getFileName().toString(), path);
-                    }
-                    }
-                    }
-                    });
+                        paths.forEach(new Consumer() {
+                            public void accept(Path path) {
+                                if (Files.isRegularFile(path, /* required for BSH method resolution: */ new LinkOption[0])) {
+                                    String relativePath = projectDir.relativize(path).toString();
+                                    if (relativePath.matches(attachmentFilepathPattern)) {
+                                        attachmentPathByFile.put(path.getFileName().toString(), path);
+                                    }
+                                }
+                            }
+                        });
                     } catch (Exception error) {
-                    // Supplement diagnostics
-                    error.printStackTrace(System.err);
-                    throw error;
+                        // Supplement diagnostics
+                        error.printStackTrace(System.err);
+                        throw error;
                     } finally {
-                    paths.close();
+                        paths.close();
                     }
 
                     // Check if no attachments were found
                     if (${attachmentCount} != attachmentPathByFile.size()) {
-                    System.err.println("Attachments:");
-                    int[] i = {0};
-                    attachmentPathByFile.values().forEach(new Consumer() {
-                    public void accept(Path path) {
-                    System.err.format(" [%2d] %s%n", new Object[]{++i[0], path});
-                    }
-                    });
-                    System.err.format(
-                    "Error: Was expecting %d attachments, found %d!%n",
-                    new Object[]{${attachmentCount}, attachmentPathByFile.size()});
-                    System.err.println("Tip: Have you already executed the Maven `package` goal?");
-                    System.exit(1);
+                        System.err.println("Attachments:");
+                        int[] i = {0};
+                        attachmentPathByFile.values().forEach(new Consumer() {
+                            public void accept(Path path) {
+                                System.err.format("  [%2d] %s%n", new Object[]{++i[0], path});
+                            }
+                        });
+                        System.err.format(
+                                "Error: Was expecting %d attachments, found %d!%n",
+                                new Object[]{${attachmentCount}, attachmentPathByFile.size()});
+                        System.err.println("Tip: Have you already executed the Maven `package` goal?");
+                        System.exit(1);
                     }
 
                     // Create the binary distribution
                     pathByFile.putAll(attachmentPathByFile);
                     zip("target/bin.zip", pathByFile);
-                    System.out.format("Generated the binary distribution (`bin.zip`) containing
-                    following %d files:%n", new Object[] {pathByFile.size()});
+                    System.out.format("Generated the binary distribution (`bin.zip`) containing following %d files:%n", new Object[] {pathByFile.size()});
                     for (String file : pathByFile.keySet()) {
-                    System.out.println("-> " + file);
+                        System.out.println("-> " + file);
                     }</script>
                 </configuration>
               </execution>
@@ -1277,8 +1243,7 @@
                 </goals>
                 <configuration>
                   <target>
-                    <copy tofile="${project.build.directory}/constants-adoc/_constants.adoc"
-                      overwrite="true" verbose="true">
+                    <copy tofile="${project.build.directory}/constants-adoc/_constants.adoc" overwrite="true" verbose="true">
                       <fileset file="src/site/_constants.tmpl.adoc" />
                     </copy>
                   </target>
