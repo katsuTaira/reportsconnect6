@@ -3,7 +3,6 @@ package jp.co.kpscorp.rc6.component;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -21,16 +20,11 @@ import jp.co.kpscorp.rc6.component.Settings.Userprop;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
-import net.sf.jasperreports.repo.FileRepositoryPersistenceServiceFactory;
-import net.sf.jasperreports.repo.FileRepositoryService;
-import net.sf.jasperreports.repo.PersistenceServiceFactory;
-import net.sf.jasperreports.repo.RepositoryService;
 
 public class PrintServiceMapSuper implements PrintService {
 
@@ -231,14 +225,7 @@ public class PrintServiceMapSuper implements PrintService {
 		// };
 		// omap.put("REPORT_FILE_RESOLVER", fileResolver);
 
-		FileRepositoryService repo = new FileRepositoryService(context, basePath, true);
-		context.setExtensions(RepositoryService.class,
-				Collections.singletonList(repo));
-		context.setExtensions(PersistenceServiceFactory.class,
-				Collections.singletonList(FileRepositoryPersistenceServiceFactory.getInstance()));
-		// JasperPrint print = JasperFillManager
-		// .fillReport(jasperReport, omap, ds);
-		JasperPrint print = JasperFillManager.getInstance(context).fill(jasperReport, omap, ds);
+		JasperPrint print = Utils.getPrint(basePath, jasperReport, context, ds, omap);
 		// pageSize check 2025/06/26
 		Settings.Userprop up = (Userprop) ThreadMap.get().get(
 				Settings.TH_USRPROP);

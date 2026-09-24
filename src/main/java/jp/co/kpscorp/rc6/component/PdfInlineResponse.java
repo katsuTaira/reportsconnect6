@@ -1,8 +1,10 @@
 package jp.co.kpscorp.rc6.component;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,18 +14,14 @@ public class PdfInlineResponse implements PrepareResponse {
 
 	public void prepare(HttpServletResponse resp,
 			PrintSource<Map<String, ?>> source) {
-		// resp.setContentType("application/octet-stream; charset=Shift_JIS");
-		try {
-			String value = source.getFileName() + ".pdf";
-			String fileName = new String(value.getBytes("SHIFT_JIS"),
-					"ISO-8859-1");
-			resp.setHeader("Content-Disposition", "inline;filename=" + fileName);
-			resp.setHeader("Content-Type", "application/pdf");
-			resp.setHeader("Connection", "close");
-			resp.setHeader("Cache-Control", "cache");
-			resp.setHeader("Pragma", "cache");
-		} catch (UnsupportedEncodingException e) {
-		}
+		// ContentDisposition を Spring が RFC 準拠で作ってくれる
+		ContentDisposition disposition = ContentDisposition
+				.inline()
+				.filename(source.getFileName() + ".pdf", StandardCharsets.UTF_8)
+				.build();
+
+		resp.setHeader(HttpHeaders.CONTENT_DISPOSITION, disposition.toString());
+
 		resp.setContentType("application/pdf");
 	}
 }

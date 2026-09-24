@@ -78,7 +78,7 @@ public class DownloadController {
 	}
 
 	public void doGetSync(HttpServletRequest req, HttpServletResponse resp,
-			String orgid, Map<String, String> pmap) throws ServletException {
+			String orgid, Map<String, String> pmap) throws ServletException, UnsupportedEncodingException {
 		synchronized (this) {
 			System.out.println("Org id:" + orgid + " batch download Start! by "
 					+ this);
@@ -174,7 +174,8 @@ public class DownloadController {
 	}
 
 	@RequestMapping("/dl2")
-	public String dl2(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+	public String dl2(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, UnsupportedEncodingException {
 		ApplicationContext con = Utils.getApplicationContext();
 		String key = req.getParameter("state");
 		if (key == null) {
@@ -412,22 +413,31 @@ public class DownloadController {
 			}
 			// SFからエラーのケース
 			// if (e instanceof RCException && e.getMessage() != null
-			if (e.getMessage() != null // 2025/06/16 exceptionなら拾う
-					&& !"true".equals(pmap.get(Utils.DataCheckKey))) {
-				e.printStackTrace();
-				String msg = e.getMessage();
-				String go;
-				try {
-					if (rnnningid != null) {
-						Utils.putLog(ip, con, Utils.exOrgId(rnnningid),
-								Utils.exUsrId(rnnningid), 2, up, s, pmap);
+			if (e.getMessage() != null) { // 2025/06/16 exceptionなら拾う
+				if (!"true".equals(pmap.get(Utils.DataCheckKey))) {
+					e.printStackTrace();
+					String msg = e.getMessage();
+					String go;
+					try {
+						if (rnnningid != null) {
+							Utils.putLog(ip, con, Utils.exOrgId(rnnningid),
+									Utils.exUsrId(rnnningid), 2, up, s, pmap);
+						}
+						go = Utils.dispachError("エラーにより印刷できません！", msg, req,
+								pmap, key);
+					} catch (Exception e1) {
+						// データ確認モードの場合
+						Utils.whenExceptionInDatacheck(req, con, e, rHint);
+						req.setAttribute("baseUrl", Utils.getBaseUrl(req));
+						Utils.putLog(ip, con, up.getOrgid(), up.getUserid(), 5, up,
+								null, pmap);
+						Utils.cleanUp(key, context); // データ確認モードreturnするのでここでクリーンアップ
+						return "views/dcheck";
 					}
-					go = Utils.dispachError("エラーにより印刷できません！", msg, req,
-							pmap, key);
-				} catch (Exception e1) {
-					throw new ServletException(e);
+					return go;
+				} else {
+
 				}
-				return go;
 			}
 			try {
 				Utils.putLog(ip, con, louid[0], louid[1], 4, up, s, pmap);
@@ -552,25 +562,9 @@ public class DownloadController {
 			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 			ps.documentEdit(byteOut, printSource);
 		} catch (Throwable e) {
-			if (e instanceof RCException && e.getMessage() != null
-					&& e.getMessage().contains(Utils.dlnodatajspKey)) {
-				req.setAttribute("hint", Utils.getHint(con, e.getMessage(), rHint));
-				return;
-			}
-			if (!(e instanceof Exception) && e.getCause() instanceof Exception) {
-				e = e.getCause();
-			}
-			Utils.Exwrap ew = new Utils.Exwrap(e);
-			req.setAttribute("ex", ew);
-
-			req.setAttribute("hint", Utils.getHint(con, ew.getMsgOrStr(), rHint));
+			Utils.whenExceptionInDatacheck(req, con, e, rHint);
 		} finally {
 			req.setAttribute("baseUrl", Utils.getBaseUrl(req));
-			// リダイレクト
-			// RequestDispatcher dispatcher = req.getSession().getServletContext()
-			// .getRequestDispatcher("/WEB-INF/views/dcheck.jsp");
-			// dispatcher.forward(req, resp);
-
 		}
 	}
 

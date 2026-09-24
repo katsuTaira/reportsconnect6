@@ -230,10 +230,12 @@ public class SetterController {
 					JasperReport jasperReport = JasperCompileManager.compileReport(f.getAbsolutePath());
 					String ofnm = f.getAbsolutePath().substring(0, f.getAbsolutePath().lastIndexOf('.'))
 							+ ".jasper";
-					FileOutputStream of = new FileOutputStream(ofnm);
-					ObjectOutputStream oos = new ObjectOutputStream(of);
-					oos.writeObject(jasperReport);
-					oos.close();
+					try (
+							FileOutputStream of = new FileOutputStream(ofnm);
+							ObjectOutputStream oos = new ObjectOutputStream(of);) {
+						oos.writeObject(jasperReport);
+					}
+					// oos.close();
 					System.out.println("compiled file path:" + ofnm);
 				}
 			}

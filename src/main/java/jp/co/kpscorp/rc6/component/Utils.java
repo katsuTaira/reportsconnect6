@@ -77,7 +77,17 @@ import jp.co.kpscorp.rc6.repo.HintRepository;
 import jp.co.kpscorp.rc6.repo.LicenseRepository;
 import jp.co.kpscorp.rc6.repo.OrganizationRepository;
 import jp.co.kpscorp.rc6.repo.UsertblRepository;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
+import net.sf.jasperreports.repo.FileRepositoryPersistenceServiceFactory;
+import net.sf.jasperreports.repo.FileRepositoryService;
+import net.sf.jasperreports.repo.PersistenceServiceFactory;
+import net.sf.jasperreports.repo.RepositoryService;
 
 public class Utils {
     private static Logger logger = Logger.getLogger(Utils.class);
@@ -372,6 +382,10 @@ public class Utils {
         if (key != null) {
             pmap = (Map<String, String>) req.getSession().getServletContext()
                     .getAttribute(key);
+            if (pmap == null) {
+                return null;
+            }
+
             ApplicationContext ctx = getApplicationContext();
             if (ctx != null) {
                 RcPmap rcPmap = ctx.getBean(RcPmap.class);
@@ -618,25 +632,30 @@ public class Utils {
                 return 0;
             }
             String orgid = (String) ajo.get(licenseOidKey);
-            List<Map<String, String>> mps = getOrgsById(con,
-                    orgid.substring(0, 15), false);
-            for (Map<String, String> mp : mps) {
-                if (Utils.ipfixKey.equals(mp.get("licensename"))) {
-                    Utils.setupProxyUrl(con);
-                    System.out.println("use proxy 1");
-                    return 1;
-                }
-                if (Utils.ipfixApacheKey.equals(mp.get("licensename"))) {
-                    System.out.println("use proxy 2");
-                    return 2;
-                }
-            }
-            return 0;
+            return checkIpfixOrg(con, orgid.substring(0, 15));
         } catch (Exception e) {
             ipfixServer = defipfixServer;
             System.out.println("DB Error use proxy 1");
             return 1;
         }
+    }
+
+    public static int checkIpfixOrg(ApplicationContext con, String orgid)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        List<Map<String, String>> mps = getOrgsById(con,
+                orgid, false);
+        for (Map<String, String> mp : mps) {
+            if (Utils.ipfixKey.equals(mp.get("licensename"))) {
+                Utils.setupProxyUrl(con);
+                System.out.println("use proxy 1");
+                return 1;
+            }
+            if (Utils.ipfixApacheKey.equals(mp.get("licensename"))) {
+                System.out.println("use proxy 2");
+                return 2;
+            }
+        }
+        return 0;
     }
 
     public static void setupProxyUrl(ApplicationContext con) {
@@ -1468,6 +1487,54 @@ public class Utils {
             InvocationTargetException, NoSuchFieldException,
             NoSuchMethodException {
         putLog(ip, con, oid, uid, err, up, tk, pmap);
+    }
+
+    /**
+     * 指定されたデータソースとパラメータを使用して、JasperReportからJasperPrintオブジェクトを生成します。
+     * レポート用のFileRepositoryServiceを設定し、basePath から resourceを読み込める様にします。
+     *
+     * @param basePath
+     *                     the base path
+     * @param jasperReport
+     *                     the jasper report
+     * @param context
+     *                     the context
+     * @param ds
+     *                     the data source
+     * @param omap
+     *                     the omap
+     * @return the jasper print
+     * @throws JRException
+     *                     the JR exception
+     */
+    public static JasperPrint getPrint(final String basePath, JasperReport jasperReport,
+            SimpleJasperReportsContext context,
+            JRMapCollectionDataSource ds, Map<String, Object> omap) throws JRException {
+        FileRepositoryService repo = new FileRepositoryService(context, basePath, true);
+        context.setExtensions(RepositoryService.class,
+                Collections.singletonList(repo));
+        context.setExtensions(PersistenceServiceFactory.class,
+                Collections.singletonList(FileRepositoryPersistenceServiceFactory.getInstance()));
+        // JasperPrint print = JasperFillManager
+        // .fillReport(jasperReport, omap, ds);
+        JasperPrint print = JasperFillManager.getInstance(context).fill(jasperReport, omap, ds);
+        return print;
+    }
+
+    public static void whenExceptionInDatacheck(HttpServletRequest req, ApplicationContext con, Throwable e,
+            HintRepository rHint) {
+        if (e instanceof RCException && e.getMessage() != null
+                && e.getMessage().contains(dlnodatajspKey)) {
+            req.setAttribute("hint", getHint(con, e.getMessage(), rHint));
+            return;
+        }
+        if (!(e instanceof Exception) && e.getCause() instanceof Exception) {
+            e = e.getCause();
+        }
+        Exwrap ew = new Exwrap(e);
+        req.setAttribute("ex", ew);
+
+        req.setAttribute("hint", getHint(con, ew.getMsgOrStr(), rHint));
     }
 
 }

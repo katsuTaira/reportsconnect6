@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -72,8 +75,15 @@ public class UploadChecker {
 			throws ServletException, IOException {
 		OutputStream out = null;
 		try {
-			response.setHeader("Content-Disposition", "filename=\"" + fnm
-					+ "\"");
+			// response.setHeader("Content-Disposition", "filename=\"" + fnm
+			// + "\"");
+			ContentDisposition disposition = ContentDisposition
+					.attachment()
+					.filename(fnm, StandardCharsets.UTF_8)
+					.build();
+
+			response.setHeader(HttpHeaders.CONTENT_DISPOSITION, disposition.toString());
+
 			out = response.getOutputStream();
 			byte[] buff = new byte[1024];
 			int len = 0;

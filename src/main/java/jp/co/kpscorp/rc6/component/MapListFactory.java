@@ -26,13 +26,13 @@ public class MapListFactory {
     @Autowired
     private PdfInlineResponse pdfInlineRes;
 
-    private final Map<String, Supplier<MapList>> registry = new HashMap<>();
+    private final Map<String, Supplier<PrintService>> registry = new HashMap<>();
 
     @PostConstruct
     public void init() {
         // ここで名前と構築ロジックを登録
         registry.put("MapList", () -> {
-            MapList m = context.getBean(MapList.class);
+            PrintService m = context.getBean(PrintService.class);
             m.setFileName("print");
             m.setExportReporter(pdfExport);
             m.setPrepareResponse(pdfRes);
@@ -40,7 +40,7 @@ public class MapListFactory {
         });
 
         registry.put("MapListInline", () -> {
-            MapList m = context.getBean(MapList.class);
+            PrintService m = context.getBean(MapList.class);
             m.setFileName("print");
             m.setExportReporter(pdfExport);
             m.setPrepareResponse(pdfInlineRes);
@@ -48,16 +48,16 @@ public class MapListFactory {
         });
     }
 
-    public MapList create(String name) {
-        Supplier<MapList> creator = registry.get(name);
+    public PrintService create(String name) {
+        Supplier<PrintService> creator = registry.get(name);
         if (creator == null) {
-            throw new IllegalArgumentException("Unknown MapList config: " + name);
+            throw new IllegalArgumentException("Unknown PrintService config: " + name);
         }
         return creator.get();
     }
 
     // メニュー追加用
-    public void register(String name, Supplier<MapList> builder) {
+    public void register(String name, Supplier<PrintService> builder) {
         registry.put(name, builder);
     }
 

@@ -16,4 +16,6 @@ public interface OrganizationRepository extends JpaRepository<Organization, Inte
 	List<Organization> findByOrgidLikeAndStartdateLessThanEqualAndEnddateGreaterThanEqualAndNumberofGreaterThan(
 			String orgid, Date startdate, Date enddate, Integer numberof);
 
+	List<Organization> findByOrgid(String oid);
+
 }
